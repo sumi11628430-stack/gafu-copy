@@ -15,7 +15,7 @@ const [, prompt, examples, opt2, opt3, opt4, tips] = b;
 const ph1 = "【　　　　ここに好きなプロンプトを入力　　　　】";
 const ph2 = "【　　　　ここに好きな選択肢を入力　　　　】";
 const phWords = "「　　　　」";
-for (const [name, ph] of [["ph1", ph1], ["ph2", ph2], ["phWords", phWords]]) {
+for (const [name, ph] of [["ph1", ph1], ["ph2", ph2], ["phWords", phWords], ["ph2+phWords", ph2 + phWords]]) {
   if (!prompt.includes(ph)) throw new Error(name + " がプロンプトに見つかりません");
 }
 
