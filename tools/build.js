@@ -26,7 +26,7 @@ const opt3 = block("③ 縦横比の選択肢");
 const opt4 = block("④ 避けることの選択肢");
 const tips = block("ツリー最後");
 
-for (const tok of ["{{画風}}", "{{足してよいもの}}", "{{追加}}"]) {
+for (const tok of ["{{画風}}", "{{作り方}}", "{{質感}}", "{{足してよいもの}}", "{{追加}}"]) {
   if (!core.includes(tok)) throw new Error("核に " + tok + " がありません");
 }
 const parts = {};
@@ -34,7 +34,7 @@ for (const line of partsText.split("\n")) {
   const k = line.indexOf("：");
   if (k > 0) parts[line.slice(0, k)] = line.slice(k + 1);
 }
-for (const key of ["画風の既定", "足してよいもの", "素材", "文字あり", "文字を残す", "文字の優先", "縦横比あり", "縦横比なし", "避けること", "除外（文字あり）", "除外（文字なし）"]) {
+for (const key of ["画風の既定", "作り方（絵）", "作り方（写真）", "質感（絵）", "質感（写真）", "足してよいもの", "素材", "文字あり", "文字を残す", "文字の優先", "縦横比あり", "縦横比なし", "避けること", "除外（文字あり）", "除外（文字なし）"]) {
   if (!parts[key]) throw new Error("部品が見つかりません：" + key);
 }
 
@@ -46,6 +46,8 @@ for (const line of examples.split("\n")) {
 }
 // 素材の画風（作品を撮った写真として描くもの）
 const material = categories.flatMap((c) => c.items.filter((it) => c.name.includes("素材") || /フィギュア|3Dプリンタ/.test(it.text)).map((it) => it.text));
+// 写真系の画風（イラストではなく写真として仕上げるもの）
+const photo = categories.flatMap((c) => c.items.filter((it) => c.name.includes("写真") && /^(フィルム写真|モノクロ写真)/.test(it.text)).map((it) => it.text));
 
 function parseOpts(text) {
   const items = []; let legend = "";
@@ -57,11 +59,11 @@ function parseOpts(text) {
 }
 const o2 = parseOpts(opt2), o3 = parseOpts(opt3), o4 = parseOpts(opt4);
 const total = categories.reduce((a, c) => a + c.items.length, 0);
-const data = { core, parts, tips, categories, legend1, total, material,
+const data = { core, parts, tips, categories, legend1, total, material, photo,
   list2: o2.items, legend2: o2.legend, list3: o3.items, list4: o4.items, legend4: o4.legend };
 
 let html = fs.readFileSync(path.join(ROOT, "src", "template.html"), "utf8");
 html = html.replace("/*__DATA__*/null", JSON.stringify(data).replace(/</g, "\\u003c")).split("__SITE_URL__").join(SITE_URL);
 fs.writeFileSync(path.join(ROOT, "index.html"), html);
 new Function(html.match(/<script>([\s\S]*)<\/script>/)[1]); // 構文チェック
-console.log("index.html を作成：①", total, "（素材", material.length, "）②", o2.items.length, "③", o3.items.length, "④", o4.items.length);
+console.log("index.html を作成：①", total, "（素材", material.length, "・写真", photo.length, "）②", o2.items.length, "③", o3.items.length, "④", o4.items.length);

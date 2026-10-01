@@ -309,11 +309,14 @@ function buildLines() {
   extra.push(ratio ? P["縦横比あり"].replace("{{比率}}", S.s3) : P["縦横比なし"]);
   if (S.s4.length) extra.push(P["避けること"].replace("{{項目}}", S.s4.join("／")));
   extra.push(hasText ? P["除外（文字あり）"] : P["除外（文字なし）"]);
-  return { style, hasText, extra };
+  const kind = S.s1 && DATA.photo.includes(S.s1) ? "写真" : "絵";
+  return { style, hasText, extra, kind };
 }
 function filledPrompt() {
   const b = buildLines();
   return DATA.core.replace("{{画風}}", b.style)
+    .replace("{{作り方}}", DATA.parts["作り方（" + b.kind + "）"])
+    .replace("{{質感}}", DATA.parts["質感（" + b.kind + "）"])
     .replace("{{足してよいもの}}", b.hasText ? DATA.parts["足してよいもの"] : "")
     .replace("{{追加}}", b.extra.join("\n"));
 }
