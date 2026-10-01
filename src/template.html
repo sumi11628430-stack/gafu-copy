@@ -278,8 +278,10 @@ function filledPrompt() {
   return DATA.prompt.split("\n").map((line) => {
     if (line.startsWith("① ") && S.s1) return line.replace(DATA.ph1, "【" + S.s1 + "】");
     if (line.startsWith("② ") && S.s2.length) {
-      const pairs = S.s2.map((t) => "【" + t + "】" + (NONE2(t) ? DATA.phWords : "「" + ((S.w2[t] || "").trim() || "　　　　") + "」"));
-      return line.replace(DATA.ph2 + DATA.phWords, pairs.join("／"));
+      const none = S.s2.find(NONE2);
+      if (none) return line.replace(DATA.ph2 + DATA.phWords, "【" + none + "】" + DATA.phWords);
+      const pairs = filledWords().map((t) => "【" + t + "】「" + S.w2[t].trim() + "」"); // 言葉が空の組はプロンプトに入れない
+      return pairs.length ? line.replace(DATA.ph2 + DATA.phWords, pairs.join("／")) : line;
     }
     if (line.startsWith("③ ") && S.s3) return line.replace(DATA.ph2, "【" + S.s3 + "】");
     if (line.startsWith("④ ") && S.s4.length) return line.replace(DATA.ph2, "【" + S.s4.join("／") + "】");
