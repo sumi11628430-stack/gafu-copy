@@ -138,7 +138,7 @@ footer p { margin: 0; }
     <h1>画風コピペシート</h1>
     <p class="lead">写真や絵を1枚、好きな画風に。ChatGPTに貼るプロンプトを、選ぶだけで作れます。</p>
     <ol class="howto">
-      <li>ChatGPTで新しいチャットを開き、画像を1枚添付する</li>
+      <li>ChatGPTで<b>新しいチャット</b>を開き、画像を1枚添付する（同じチャットで続けると、前の画像に引っ張られます）</li>
       <li>このページで①〜④のタブを順に選ぶ（選ばなくてもOK）</li>
       <li>「全文をコピー」して、ChatGPTに貼って送る</li>
     </ol>
@@ -220,7 +220,7 @@ footer p { margin: 0; }
         <button class="reset" id="reset">選択をリセット</button>
         <span class="done" id="done-try" hidden>コピーしました</span>
       </div>
-      <p class="note">選ばなかった欄は、やさしい水彩画・文字なし・添付画像に近い形で作られます。</p>
+      <p class="note">選ばなかった項目はプロンプトに入りません（画風はやさしい水彩画、文字なし、縦横比は元の写真に近い形になります）。</p>
     </div>
     <div class="block">
       <h2>うまくいかないとき</h2>
@@ -274,29 +274,42 @@ const NONE2 = (t) => t.startsWith("なし");
 function esc(s) { return s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
 function split(text) { const m = text.match(/^(.*?)（(.*)）$/); return m ? [m[1], m[2]] : [text, ""]; }
 
-function filledPrompt() {
-  return DATA.prompt.split("\n").map((line) => {
-    if (line.startsWith("① ") && S.s1) return line.replace(DATA.ph1, "【" + S.s1 + "】");
-    if (line.startsWith("② ") && S.s2.length) {
-      const none = S.s2.find(NONE2);
-      if (none) return line.replace(DATA.ph2 + DATA.phWords, "【" + none + "】" + DATA.phWords);
-      const pairs = filledWords().map((t) => "【" + t + "】「" + S.w2[t].trim() + "」"); // 言葉が空の組はプロンプトに入れない
-      return pairs.length ? line.replace(DATA.ph2 + DATA.phWords, pairs.join("／")) : line;
-    }
-    if (line.startsWith("③ ") && S.s3) return line.replace(DATA.ph2, "【" + S.s3 + "】");
-    if (line.startsWith("④ ") && S.s4.length) return line.replace(DATA.ph2, "【" + S.s4.join("／") + "】");
-    return line;
-  }).join("\n");
+// プロンプトを組み立てる：核（B案）に、選んだ項目の行だけを足す。選ばなかった項目は入れない
+function buildLines() {
+  const P = DATA.parts;
+  const style = S.s1 || P["画風の既定"];
+  const pairs = S.s2.some(NONE2) ? [] : filledWords();
+  const hasText = pairs.length > 0;
+  const extra = [];
+  if (S.s1 && DATA.material.includes(S.s1)) extra.push(P["素材"]);
+  if (hasText) {
+    extra.push(P["文字あり"].replace("{{組}}", pairs.map((t) => "【" + t + "】「" + S.w2[t].trim() + "」").join("／")));
+    if (pairs.some((t) => t.startsWith("元の画像の文字を残す"))) extra.push(P["文字を残す"]);
+    extra.push(P["文字の優先"]);
+  }
+  const ratio = S.s3 && !S.s3.startsWith("おまかせ");
+  extra.push(ratio ? P["縦横比あり"].replace("{{比率}}", S.s3) : P["縦横比なし"]);
+  if (S.s4.length) extra.push(P["避けること"].replace("{{項目}}", S.s4.join("／")));
+  extra.push(hasText ? P["除外（文字あり）"] : P["除外（文字なし）"]);
+  return { style, hasText, extra };
 }
+function filledPrompt() {
+  const b = buildLines();
+  return DATA.core.replace("{{画風}}", b.style)
+    .replace("{{足してよいもの}}", b.hasText ? DATA.parts["足してよいもの"] : "")
+    .replace("{{追加}}", b.extra.join("\n"));
+}
+// 選んだ内容から入った部分だけを強調する
 function previewHtml(p) {
-  return p.split("\n").map((line, i) => {
-    const e = esc(line);
-    if (i >= 4) return e;
-    const k = e.indexOf("　（", e.indexOf("】"));
-    const head = k > 0 ? e.slice(0, k) : e, rest = k > 0 ? e.slice(k) : "";
-    const re = i === 1 ? /【[^】]*】|「[^」]*」/g : /【[^】]*】/g;
-    return head.replace(re, (m) => "<mark>" + m + "</mark>") + rest;
-  }).join("\n");
+  const marks = [];
+  if (S.s1) marks.push(S.s1);
+  filledWords().forEach((t) => marks.push(t, "「" + S.w2[t].trim() + "」"));
+  if (S.s3 && !S.s3.startsWith("おまかせ")) marks.push(S.s3);
+  S.s4.forEach((t) => marks.push(t));
+  let e = esc(p);
+  const OPEN = "\u0000", CLOSE = "\u0001";
+  for (const m of marks.sort((a, b) => b.length - a.length)) { const em = esc(m); e = e.split(em).join(OPEN + em + CLOSE); }
+  return e.split(OPEN).join("<mark>").split(CLOSE).join("</mark>");
 }
 function textPairs() { return S.s2.filter((t) => !NONE2(t)); }
 function wantsText() { return textPairs().length > 0; }
