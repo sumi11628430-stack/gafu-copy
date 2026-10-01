@@ -87,6 +87,10 @@ const data = { core, parts, core2, parts2, notes2, tips, categories, legend1, to
 
 let html = fs.readFileSync(path.join(ROOT, "src", "template.html"), "utf8");
 html = html.replace("/*__DATA__*/null", JSON.stringify(data).replace(/</g, "\\u003c")).split("__SITE_URL__").join(SITE_URL);
-fs.writeFileSync(path.join(ROOT, "index.html"), html);
+fs.mkdirSync(path.join(ROOT, "sheet"), { recursive: true });
+fs.writeFileSync(path.join(ROOT, "sheet", "index.html"), html);
+// トップページ（見本の絵と案内。プロンプトのデータは使わない）
+const top = fs.readFileSync(path.join(ROOT, "src", "top.html"), "utf8").split("__SITE_URL__").join(SITE_URL).split("画風の例 50種").join("画風の例 " + total + "種").split("ほか全50種").join("ほか全" + total + "種");
+fs.writeFileSync(path.join(ROOT, "index.html"), top);
 new Function(html.match(/<script>([\s\S]*)<\/script>/)[1]); // 構文チェック
-console.log("index.html を作成：①", total, "（素材", material.length, "・写真", photo.length, "・2枚モード注意書き", notes2.length, "）②", o2.items.length, "③", o3.items.length, "④", o4.items.length);
+console.log("index.html（トップ）と sheet/index.html（道具）を作成：①", total, "（素材", material.length, "・写真", photo.length, "・2枚モード注意書き", notes2.length, "）②", o2.items.length, "③", o3.items.length, "④", o4.items.length);

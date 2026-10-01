@@ -5,10 +5,15 @@
 - ① 仕上がりの雰囲気（例50）／② 画像内の文字／③ 縦横比／④ 入れないもの を選んで、全文をコピーできます
 - 入力や選択はページの中だけで使われ、どこにも送信されません
 
+## ページ
+
+- `/`：トップ（使い方・画風の見本・2枚を合わせる紹介）。元は `src/top.html`
+- `/sheet/`：道具の画面。元は `src/template.html`。`?mode=2` で2枚モード、`?s=番号` でその画風を選んだ状態で開く
+
 ## 更新のしかた
 
 1. プロンプトの元になるmdファイルを直す
-2. `node tools/build.js <mdファイルのパス>` で `index.html` を作り直す
+2. `node tools/build.js <mdファイルのパス>` で `index.html`（トップ）と `sheet/index.html`（道具の画面）を作り直す
 3. カード画像を作り直すときは `python tools/make_ogp.py`（Playwrightとインストール済みのChromeを使用）
 
 公開先のURLが変わったときは、`tools/build.js` の `SITE_URL` を直してから作り直してください。
