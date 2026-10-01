@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>画風コピペシート</title>
+<meta name="description" content="写真1枚を好きな画風に。ChatGPTに貼るプロンプトを、雰囲気・文字・縦横比・入れないものを選ぶだけで作れます。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="画風コピペシート">
+<meta property="og:description" content="写真1枚を好きな画風に。ChatGPTに貼るプロンプトを、選ぶだけで作れます。画風の例50つき。">
+<meta property="og:url" content="https://gafu-copy.netlify.app/">
+<meta property="og:image" content="https://gafu-copy.netlify.app/ogp.png">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232c4687'/%3E%3Ccircle cx='22' cy='24' r='7' fill='%23f2a07c'/%3E%3Ccircle cx='40' cy='22' r='6' fill='%237fd1a8'/%3E%3Ccircle cx='44' cy='40' r='7' fill='%23e4eaf7'/%3E%3Ccircle cx='24' cy='42' r='6' fill='%23f0b860'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&family=Zen+Old+Mincho:wght@700&display=swap">
+<style>
+/* 版画の刷り見本帳：藍のインク1色を差し色に、紙の上へ見本札を並べる一段組み */
+:root {
+  --paper: #f4f6f9;
+  --sheet: #ffffff;
+  --ink: #1a2232;
+  --muted: #5b6577;
+  --line: #d8dee8;
+  --accent: #2c4687;
+  --accent-ink: #ffffff;
+  --accent-soft: #e4eaf7;
+  --pop: #a2441f;
+  --pop-soft: #fbe9e1;
+  --orig: #2d6b4f;
+  --orig-soft: #e1f2e9;
+  --ok: #1f7a4d;
+  --warn: #9a5b00;
+  --font-display: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  --radius: 10px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #10141c; --sheet: #171d28; --ink: #e6e9f0; --muted: #9ba4b4; --line: #2a3345;
+    --accent: #93abe8; --accent-ink: #0f1522; --accent-soft: #1d2842; --ok: #6fd3a0; --warn: #f0b860;
+    --pop: #f2a07c; --pop-soft: #3a2219; --orig: #7fd1a8; --orig-soft: #173328;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #10141c; --sheet: #171d28; --ink: #e6e9f0; --muted: #9ba4b4; --line: #2a3345;
+  --accent: #93abe8; --accent-ink: #0f1522; --accent-soft: #1d2842; --ok: #6fd3a0; --warn: #f0b860;
+  --pop: #f2a07c; --pop-soft: #3a2219; --orig: #7fd1a8; --orig-soft: #173328;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.7; padding-top: env(safe-area-inset-top, 0px); }
+.wrap { max-width: 760px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 150px; display: flex; flex-direction: column; gap: 20px; }
+header { display: flex; flex-direction: column; gap: 8px; }
+h1 { font-family: var(--font-display); font-size: 2rem; line-height: 1.3; margin: 0; text-wrap: balance; letter-spacing: 0.02em; }
+.lead { margin: 0; color: var(--muted); }
+.howto { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin: 4px 0 0; padding: 0; list-style: none; counter-reset: s; }
+.howto li { background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 0.88rem; line-height: 1.5; counter-increment: s; display: flex; gap: 8px; min-width: 0; }
+.howto li::before { content: counter(s); font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+section.panel { display: flex; flex-direction: column; gap: 20px; }
+.block { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.block h2 { font-size: 1.05rem; margin: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.step { font-size: 0.8rem; letter-spacing: 0.06em; color: var(--accent); font-weight: 700; }
+pre.text { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: var(--font-body); font-size: 0.9rem; line-height: 1.75; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 12px; max-height: 340px; overflow: auto; }
+pre.text mark { background: var(--accent-soft); color: var(--accent); font-weight: 700; padding: 0 2px; border-radius: 3px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button.copy, button.use { font: inherit; font-weight: 700; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+button.reset { font: inherit; font-size: 0.85rem; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+button:focus-visible, input:focus-visible, .style-item:focus-visible, .chip:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.done { color: var(--ok); font-size: 0.85rem; font-weight: 700; }
+.custom { display: flex; gap: 8px; flex-wrap: wrap; }
+.custom input { flex: 1 1 220px; min-width: 0; font: inherit; font-size: 16px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+.note { margin: 0; font-size: 0.8rem; color: var(--muted); }
+.note.warn { color: var(--warn); font-weight: 700; }
+.cats { display: flex; flex-direction: column; gap: 16px; }
+.cat h3 { font-size: 0.8rem; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 6px; }
+.list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px; }
+.style-item { text-align: left; font: inherit; display: grid; grid-template-columns: 2.2em 1fr; gap: 4px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; min-width: 0; }
+.style-item .n { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 0.8rem; padding-top: 2px; }
+.style-item .t { font-weight: 700; font-size: 0.9rem; line-height: 1.4; }
+.style-item .d { grid-column: 2; font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+.style-item[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.style-item[aria-pressed="true"] .t { color: var(--accent); }
+.badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0 6px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; letter-spacing: 0.04em; }
+.badge.pop { background: var(--pop-soft); color: var(--pop); }
+.badge.orig { background: var(--orig-soft); color: var(--orig); }
+.badge.off { background: var(--accent-soft); color: var(--accent); }
+.badge.art { background: var(--paper); color: var(--muted); border: 1px solid var(--line); }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter { font: inherit; font-size: 0.85rem; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+.filter[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+.legend { margin: 0; font-size: 0.8rem; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; text-align: left; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; display: flex; flex-direction: column; min-width: 0; max-width: 100%; }
+.chip .t { font-weight: 700; font-size: 0.88rem; }
+.chip .d { font-size: 0.75rem; color: var(--muted); }
+.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.chip[aria-pressed="true"] .t { color: var(--accent); }
+ul.points { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; font-size: 0.88rem; }
+details { font-size: 0.85rem; color: var(--muted); }
+details summary { cursor: pointer; font-weight: 700; color: var(--ink); }
+details ul { margin: 8px 0 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
+details a, footer a { color: var(--accent); }
+footer { font-size: 0.78rem; color: var(--muted); display: flex; flex-direction: column; gap: 4px; padding-top: 8px; border-top: 1px solid var(--line); }
+footer p { margin: 0; }
+.bar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--sheet); border-top: 1px solid var(--line); padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); }
+.bar-inner { max-width: 760px; margin: 0 auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.bar .sel { flex: 1 1 220px; min-width: 0; font-size: 0.8rem; line-height: 1.5; }
+.bar .sel div { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar .sel b { color: var(--accent); }
+.fallback { display: flex; flex-direction: column; gap: 6px; }
+.fallback textarea { width: 100%; min-height: 140px; font: inherit; font-size: 0.85rem; padding: 10px; border-radius: 8px; border: 1px solid var(--warn); background: var(--paper); color: var(--ink); }
+.fallback p { margin: 0; font-size: 0.85rem; color: var(--warn); font-weight: 700; }
+@media (prefers-reduced-motion: no-preference) { .style-item, .chip, button { transition: background-color .15s, border-color .15s; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>画風コピペシート</h1>
+    <p class="lead">写真や絵を1枚、好きな画風に。ChatGPTに貼るプロンプトを、選ぶだけで作れます。</p>
+    <ol class="howto">
+      <li>ChatGPTで新しいチャットを開き、画像を1枚添付する</li>
+      <li>このページで①〜④を選ぶ（選ばなくてもOK）</li>
+      <li>「全文をコピー」して、ChatGPTに貼って送る</li>
+    </ol>
+  </header>
+
+  <div class="fallback" id="fallback" hidden>
+    <p>自動でコピーできませんでした。下の文字が選択されているので、長押し（またはCtrl+C）でコピーしてください。</p>
+    <textarea id="fallback-text" readonly></textarea>
+  </div>
+
+  <section class="panel">
+    <div class="block">
+      <h2><span class="step">①</span>仕上がりの雰囲気</h2>
+      <div class="custom">
+        <input id="custom" type="text" placeholder="自分の言葉で入れる（例：夕焼け色の切り絵）" autocomplete="off">
+        <button class="use" id="use-custom">この言葉を使う</button>
+      </div>
+      <p class="note">作家名・スタジオ名・作品名・キャラ名・ブランド名は入れないでください。下の例から選んでもOKです。</p>
+      <div class="filters" role="group" aria-label="絞り込み">
+        <button class="filter" data-f="all" aria-pressed="true">すべて</button>
+        <button class="filter" data-f="pop" aria-pressed="false">★人気</button>
+        <button class="filter" data-f="orig" aria-pressed="false">◆オリジナル</button>
+      </div>
+      <p class="legend" id="legend1"></p>
+      <div class="cats" id="cats"></div>
+    </div>
+
+    <div class="block">
+      <h2><span class="step">②</span>画像内の文字</h2>
+      <p class="legend" id="legend2"></p>
+      <div class="chips" id="chips2"></div>
+      <div class="custom">
+        <input id="words" type="text" placeholder="入れる言葉（例：はじめての海）" autocomplete="off">
+      </div>
+      <p class="note" id="words-note"></p>
+    </div>
+
+    <div class="block">
+      <h2><span class="step">③</span>縦横比</h2>
+      <p class="legend">ChatGPTでは、選んだ比率に近い形で出てきます。</p>
+      <div class="chips" id="chips3"></div>
+    </div>
+
+    <div class="block">
+      <h2><span class="step">④</span>入れないもの（いくつでも）</h2>
+      <p class="legend" id="legend4"></p>
+      <div class="chips" id="chips4"></div>
+      <p class="note">文字・ロゴ・透かし・既存のキャラクターに似た姿・切手やお札に似せた表現は、選ばなくても入りません。</p>
+    </div>
+
+    <div class="block">
+      <h2><span class="step">完成</span>プロンプト全文</h2>
+      <pre class="text" id="try-text"></pre>
+      <div class="row">
+        <button class="copy" id="copy-try">全文をコピー</button>
+        <button class="reset" id="reset">選択をリセット</button>
+        <span class="done" id="done-try" hidden>コピーしました</span>
+      </div>
+      <p class="note">選ばなかった欄は、やさしい水彩画・文字なし・添付画像に近い形で作られます。</p>
+    </div>
+
+    <div class="block">
+      <h2>うまくいかないとき</h2>
+      <pre class="text" id="tips"></pre>
+    </div>
+
+    <div class="block">
+      <h2>使う前に</h2>
+      <ul class="points">
+        <li>自分で撮った写真や、自分で描いた絵を使ってください。他人の作品や有名人の写真は使わないでください。</li>
+        <li>人が写っている写真は、写っている人の了承を取ってから使ってください。</li>
+        <li>できた画像をSNSに載せるときは、AIで作った画像だと分かるようにするのがおすすめです。</li>
+        <li>同じプロンプトでも、出来は毎回変わります。ChatGPTのプランや作れる枚数は変わることがあります。</li>
+      </ul>
+      <details>
+        <summary>★・◆・◎・○の印について</summary>
+        <ul>
+          <li>★人気：2025〜2026年に記事で話題として取り上げられた画風を、作品名を使わない言い方にしたもの。<a href="https://ascii.jp/elem/000/004/259/4259624/" target="_blank" rel="noopener">ASCII</a>、<a href="https://macaonews.org/life/entertainment/google-gemini-nano-banana-ai-image-generator/" target="_blank" rel="noopener">Macao News</a>、<a href="https://weel.co.jp/media/innovator/chatgpt-pixel-art/" target="_blank" rel="noopener">weel</a> などの記事をもとにしています。</li>
+          <li>◆オリジナル：このページで考えた画風で、検索してもあまり見つからなかったもの。</li>
+          <li>◎公式：<a href="https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide" target="_blank" rel="noopener">OpenAIの画像プロンプトガイド</a>に、使い道や書き方が載っているもの。</li>
+          <li>○記事：記事やまとめで紹介・よく使われているもの。ChatGPTで効くかは確かめられていないものも含みます。</li>
+          <li>2026年10月時点の情報です。</li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <footer>
+    <p>このページは個人が作ったもので、OpenAIとは関係ありません。ChatGPTはOpenAIのサービスです。</p>
+    <p>入力した言葉や選んだ内容は、このページの中だけで使われ、どこにも送信・保存されません。</p>
+  </footer>
+</div>
+
+<div class="bar" id="bar">
+  <div class="bar-inner">
+    <div class="sel" id="bar-sel"></div>
+    <button class="copy" id="copy-bar">全文をコピー</button>
+    <span class="done" id="done-bar" hidden>コピーしました</span>
+  </div>
+</div>
+
+<script>
+const DATA = {"ph1":"【　　　　ここに好きなプロンプトを入力　　　　】","ph2":"【　　　　ここに好きな選択肢を入力　　　　】","phWords":"「　　　　」","prompt":"① 仕上がりの雰囲気　【　　　　ここに好きなプロンプトを入力　　　　】　（作家名・スタジオ名・作品名・キャラ名・ブランド名は書かない）\n② 画像内の文字　　　【　　　　ここに好きな選択肢を入力　　　　】　入れる言葉「　　　　」\n③ 縦横比　　　　　　【　　　　ここに好きな選択肢を入力　　　　】\n④ 入れないもの　　　【　　　　ここに好きな選択肢を入力　　　　】　（いくつでも。「／」で区切る）\n\n【用途】\nSNS投稿用の画像。添付した画像を、①の雰囲気で描き直した1枚の作品。\n\n【添付した画像の扱い】\n添付した画像を1枚使います。\n残すもの：主役（人・動物・物・風景）が何かすぐ分かる形、向きやポーズ。人物なら顔立ち・髪型・服など、その人と分かる特徴。風景なら地形・建物の並び・水平線の位置（細かい部分は①の画風に合わせて単純化してよい）\n変えるもの：画風・質感・色づかい・光・背景のすべてを、①の雰囲気に合わせる（元の色や背景は守らなくてよい）\n主役が複数のとき（家族・友人・ペットと飼い主など）：メインで写っている全員を残し、いちばん目立つ1つ（1人）を大きく描く。背景にたまたま写っている通行人など、主役でない人は描かない\n描かないもの：元の画像に写っている文字、ロゴ、番号、車のナンバー、看板や表札の文字（②で入れる言葉は別）\n\n【仕上がり】\n・画面全体を①の画風で描く。額縁・台紙・画面の外側の白いふちは付けない（水墨画の余白のように、画風そのものの余白はよい）\n・背景と光は、①にいちばん合う形をあなたが決める（例：ネオンなら暗い背景、壁画なら石の壁、浮世絵なら和紙の無地）\n・構図（主役の位置・大きさ・画面の使い方）は、主役の向きとポーズを変えない範囲で調整してよい。主役ははっきり見える大きさで\n・添付画像に写っていない人・動物・物・建物は足さない（②で選んだ文字のための吹き出し・看板・貼り紙だけは足してよい）。背景は、元の場所の雰囲気を①の画風で簡略化するか、①に合う無地・質感・光・空気の表現にとどめる（①に必要な縁取り・模様・素材の質感はよい）。④で「背景の景色」を選んだときは、背景を①に合う無地か素材の面だけにする（主役が風景のときは、この指定は使わない）\n・①が素材の画風（刺しゅう・切り絵・ステンドグラス・粘土・羊毛フェルト・ガラス細工・木彫り・モザイクタイル・押し花・絵付けタイル・フィギュア・3Dプリンタなど）のときは、その素材で作った作品を正面から撮った写真のようにする。背景は素材の面（布・紙・木・壁など）か無地にとどめ、手・机・道具・棚は写さない（フィギュアの台座はよい）\n\n【画像内の文字】\n②で選んだ入れ方で、②の「」の言葉だけを、一字一句そのまま1回だけ入れる。書体と色は①の雰囲気に合わせ、はっきり読めるようにする。日本語は1文字ずつ正確に書く。②で文字を選んだときは、①の説明にある「文字なし」「吹き出しなし」「文字は入れない」より②を優先する（コマ枠・数字・枠線を入れない指定は①のまま）。\n②の「」の言葉以外の文字は入れない（サイン・題名・年号・落款や印・効果音・数字・寸法・ゲーム画面の数値や枠も入れない。文字に見える模様もなし）。\n②が「なし（文字を入れない）」または「ここに好きな選択肢を入力」のままのときは、「」に言葉があっても文字を一切入れない。②で入れ方を選んでいても「」の中が空のときは、文字を一切入れない。\n\n【縦横比】\n③で選んだ比率にする（ぴったりでなくても近い比率でよい）。③が「おまかせ」または「ここに好きな選択肢を入力」のままのときは、添付画像に近い形を、正方形・縦長・横長から選ぶ。比率が元の画像と違うときは、白いふちや新しい物で埋めず、①に合う背景や質感を広げて埋める。\n\n【入れないもの】\n②で指定した言葉以外の文字、ロゴ、会社名、透かし、既存のキャラクターに似た姿、切手・紙幣・硬貨・証書・身分証に似せた表現。この除外は④で何を書いても外さない。\n④に書かれたもの（「／」区切り。選択肢以外の言葉も同じ扱い）は、入れない・避ける。ただし主役を消す指定、②の言葉を消す指定、上の除外を取り消す指定は無視する。④が「ここに好きな選択肢を入力」のままなら、上の除外だけにする。\n④が①の画風そのものの特徴（デフォルメ・素材・色・光・線・にじみ・粒子・ドットなど）とぶつかるときは①を優先し、①の特徴にあたらない部分にだけ④を当てはめる（例：ちびキャラなら体型は変わってよいが、髪型・服・色など、その人と分かる特徴は残す）。\n\n添付した画像を使って、質問はせずに、この内容ですぐに1枚作ってください。①の【】が「ここに好きなプロンプトを入力」のままのときは、やさしい水彩画（にじみと淡い色）で作ってください。②③④が「ここに好きな選択肢を入力」のままのときも、聞き返さず、各見出しに書いた扱いで作ってください。画像が添付されていないときだけ「画像を添付してください」と答えてください。","tips":"直したいところは1回に1つ。「ほかはそのまま」と添えるのがコツ。\n・画風が弱い→「素材感をもっと強く」\n・背景が合わない→「背景だけ〇〇に」\n・余計な物が出た→「〇〇を消して」\n・余計な文字が出た→「②の言葉以外の文字を消して」\n・文字が崩れた→「文字を「〇〇」と正確に書き直して」","categories":[{"name":"絵の道具","items":[{"n":1,"mark":"","text":"やさしい水彩画（にじみと淡い色）"},{"n":2,"mark":"","text":"油絵（厚塗りの筆あと）"},{"n":3,"mark":"","text":"色鉛筆の絵本（やわらかい線と紙の目）"},{"n":4,"mark":"","text":"クレヨンの子どもの絵（はみ出した線と明るい色）"},{"n":5,"mark":"","text":"水墨画（墨のにじみと余白、朱色の差し色）"},{"n":6,"mark":"","text":"鉛筆デッサン（白黒の濃淡と細かい線）"},{"n":7,"mark":"","text":"点描（小さな色の点を重ねて描いた絵）"}]},{"name":"版画・印刷・線画","items":[{"n":8,"mark":"","text":"浮世絵の木版画（太い輪郭線、平らな色、和紙の質感）"},{"n":9,"mark":"","text":"消しゴムはんこ（素朴な線と少しかすれたインク）"},{"n":10,"mark":"","text":"昭和レトロな印刷物（くすんだ色、少しずれた色刷り、紙のざらつき）"},{"n":11,"mark":"","text":"ビンテージポスター（平らな色面と太い形）"},{"n":12,"mark":"","text":"シルクスクリーン印刷のポップな絵（明るい原色の色面、少しずれた版、細かい網点）"},{"n":13,"mark":"","text":"設計図風の線画（青い紙に白い線だけ。数字・文字・枠線は入れない）"},{"n":14,"mark":"★","text":"塗り絵の線画（黒い線だけ、色なし）"}]},{"name":"手しごと・素材","items":[{"n":15,"mark":"","text":"和紙の切り絵（紙を重ねた影）"},{"n":16,"mark":"","text":"ステンドグラス（黒い縁取りと光を通す色ガラス）"},{"n":17,"mark":"","text":"刺しゅう（糸の立体感とステッチ）"},{"n":18,"mark":"","text":"モザイクタイル（小さな色タイルを並べた質感）"},{"n":19,"mark":"","text":"押し花アート（花びらや葉を貼り合わせて形を作った質感）"},{"n":20,"mark":"","text":"粘土細工の3D（ころんとした立体とやさしい光）"},{"n":21,"mark":"","text":"羊毛フェルト（ふわふわの毛並みと丸い形）"},{"n":22,"mark":"","text":"ガラス細工（透明な色ガラスの立体、光の屈折ときらめき）"},{"n":23,"mark":"","text":"木彫りのレリーフ（木目と彫り跡のある浅い立体）"}]},{"name":"時代・地域の様式","items":[{"n":24,"mark":"","text":"アールヌーボーの曲線装飾（草花の縁取り）"},{"n":25,"mark":"","text":"北欧デザインの素朴な図案（丸みのある形、落ち着いた緑と生成り色）"},{"n":26,"mark":"","text":"古典的な西洋絵画（暗い背景、深い陰影、なめらかな筆づかい）"},{"n":27,"mark":"","text":"金地の日本画（金色の背景、岩絵の具の落ち着いた色、くっきりした輪郭）"},{"n":28,"mark":"","text":"古代の壁画（ざらついた石の壁、土の色、素朴な線）"},{"n":29,"mark":"","text":"地中海の絵付けタイル（白地に青い絵の具、手描きの線）"},{"n":30,"mark":"","text":"キュビスム（形を面に分解して組み直した絵）"}]},{"name":"アニメ・漫画","items":[{"n":31,"mark":"","text":"アニメ塗りのイラスト（くっきりした輪郭線、影は2色のぬり分け）"},{"n":32,"mark":"★","text":"手描きの長編アニメ映画風（水彩で描き込んだ背景、やわらかい色と光）"},{"n":33,"mark":"★","text":"ちびキャラ（2〜3頭身のデフォルメ、大きな頭と小さな体）"},{"n":34,"mark":"","text":"白黒の漫画（ペンの線とスクリーントーン。吹き出し・文字なし）"},{"n":35,"mark":"","text":"少女漫画（キラキラの瞳、花とトーンの背景）"},{"n":36,"mark":"◆","text":"アニメの原画（鉛筆の線と、影の境目を赤と青の色鉛筆で引いた線）"},{"n":37,"mark":"◆","text":"漫画の描きかけ原稿（水色の下描き線の上に、黒いペン入れが半分だけ進んだ状態。コマ枠・吹き出しなし）"},{"n":38,"mark":"◆","text":"アニメのセル画を光に透かした質感（透明なセルの絵を背景画に重ねた1枚）"}]},{"name":"ゲーム・CG・フィギュア","items":[{"n":39,"mark":"","text":"粗いドット絵（大きな四角い粒と少ない色数）"},{"n":40,"mark":"★","text":"着せ替えアバター風のドット絵（服の柄まで細かく描いた小さなドット絵）"},{"n":41,"mark":"","text":"ローポリゴン（角ばった三角の面でできた立体）"},{"n":42,"mark":"","text":"つやのある3DCG（なめらかな立体とやわらかい光）"},{"n":43,"mark":"★","text":"塗装済みフィギュア（つやのある塗装と丸い透明の台座）"},{"n":44,"mark":"◆","text":"3Dプリンタで出力した白い立体（積層の筋が見える樹脂）"}]},{"name":"写真・光・色の空気感","items":[{"n":45,"mark":"","text":"ネオンサイン（暗い背景に光る色の線）"},{"n":46,"mark":"","text":"フィルム写真（少し粒子のある、色あせた色）"},{"n":47,"mark":"","text":"モノクロ写真（白黒、強い光と影）"},{"n":48,"mark":"","text":"夕暮れの光（オレンジの逆光と長い影）"},{"n":49,"mark":"","text":"青い夜の光（月明かりのような青と静かな影）"},{"n":50,"mark":"","text":"ゆめかわいいパステル調（ピンク・水色・ラベンダーのふんわりした色）"}]}],"legend1":"★＝記事で話題になった画風を、作品名を使わない言い方にしたもの　◆＝あまり出回っていないオリジナル","total":50,"list2":[{"n":1,"mark":"","text":"なし（文字を入れない）"},{"n":2,"mark":"○","text":"タイトル（画像の上部に、大きな1行で）"},{"n":3,"mark":"◎","text":"キャッチコピー（短い一文を、余白に読みやすく）"},{"n":4,"mark":"◎","text":"一言メッセージ（下の方に小さく、添え書きのように。枠やカードは付けない）"},{"n":5,"mark":"◎","text":"吹き出しのセリフ（漫画のように、吹き出しを1つ）"},{"n":6,"mark":"○","text":"サムネ用の太字見出し（中央に大きく、背景とはっきり分かれる色で）"},{"n":7,"mark":"○","text":"看板・ポスターの文字（絵の中の看板や貼り紙に、自然に書かれた文字として）"},{"n":8,"mark":"○","text":"画風に溶け込む文字（①の素材や質感の一部として。読める濃さは保つ）"}],"legend2":"◎＝OpenAI公式ガイドに使い道として載っている　○＝記事・まとめで紹介されている","list3":[{"n":1,"mark":"","text":"おまかせ（添付画像に近い形）"},{"n":2,"mark":"","text":"正方形 1:1（Instagram・X・アイコン）"},{"n":3,"mark":"","text":"縦長 4:5（Instagramのフィード）"},{"n":4,"mark":"","text":"縦長 3:4（Lemon8・Instagramのプロフィール一覧）"},{"n":5,"mark":"","text":"縦長 2:3（ChatGPTの標準の縦長）"},{"n":6,"mark":"","text":"縦長 9:16（TikTok・ストーリーズ・リール）"},{"n":7,"mark":"","text":"縦長 9:19.5（スマホの壁紙。上の方は時計と重なる）"},{"n":8,"mark":"","text":"横長 16:9（X・YouTubeのサムネイル・スライド）"},{"n":9,"mark":"","text":"横長 3:2（ChatGPTの標準の横長・ブログ）"},{"n":10,"mark":"","text":"横長 1.91:1（noteの見出し画像）"}],"list4":[{"n":1,"mark":"◎","text":"顔や体型の変えすぎ（顔立ち・体型・肌の色は元に近く）"},{"n":2,"mark":"◎","text":"作り込みすぎ（つるつるの肌や、過度な美化）"},{"n":3,"mark":"◎","text":"強すぎる照明と色（ドラマチックな光、強い陰影、派手すぎる色）"},{"n":4,"mark":"◎","text":"ごちゃごちゃした飾り（細かい装飾や模様を増やしすぎない）"},{"n":5,"mark":"◎","text":"背景の景色（主役だけを無地の背景に）"},{"n":6,"mark":"○","text":"ぼやけ・低画質（ピントはくっきり）"},{"n":7,"mark":"○","text":"指や手の崩れ（指は自然な5本）"},{"n":8,"mark":"○","text":"顔のゆがみ（目や口の形は自然に）"}],"legend4":"◎＝OpenAI公式ガイドに書き方がある　○＝記事・まとめでよく使われる（ChatGPTで効くかは確かめられていない）"};
+const $ = (id) => document.getElementById(id);
+const S = { s1: null, s2: null, words: "", s3: null, s4: [] };
+
+function esc(s) { return s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+function split(text) { const m = text.match(/^(.*?)（(.*)）$/); return m ? [m[1], m[2]] : [text, ""]; }
+
+function filledPrompt() {
+  return DATA.prompt.split("\n").map((line) => {
+    if (line.startsWith("① ") && S.s1) return line.replace(DATA.ph1, "【" + S.s1 + "】");
+    if (line.startsWith("② ")) {
+      let l = line;
+      if (S.s2) l = l.replace(DATA.ph2, "【" + S.s2 + "】");
+      if (S.words.trim()) l = l.replace(DATA.phWords, "「" + S.words.trim() + "」");
+      return l;
+    }
+    if (line.startsWith("③ ") && S.s3) return line.replace(DATA.ph2, "【" + S.s3 + "】");
+    if (line.startsWith("④ ") && S.s4.length) return line.replace(DATA.ph2, "【" + S.s4.join("／") + "】");
+    return line;
+  }).join("\n");
+}
+function previewHtml(p) {
+  return p.split("\n").map((line, i) => {
+    const e = esc(line);
+    if (i >= 4) return e;
+    const re = i === 1 ? /【[^】]*】|「[^」]*」/g : /【[^】]*】/g;
+    return e.replace(re, (m) => "<mark>" + m + "</mark>");
+  }).join("\n");
+}
+function wantsText() { return !!S.s2 && !S.s2.startsWith("なし"); }
+function render() {
+  $("try-text").innerHTML = previewHtml(filledPrompt());
+  document.querySelectorAll(".style-item").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.text === S.s1)));
+  document.querySelectorAll("#chips2 .chip").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.text === S.s2)));
+  document.querySelectorAll("#chips3 .chip").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.text === S.s3)));
+  document.querySelectorAll("#chips4 .chip").forEach((b) => b.setAttribute("aria-pressed", String(S.s4.includes(b.dataset.text))));
+  const wn = $("words-note");
+  if (wantsText() && !S.words.trim()) { wn.textContent = "入れる言葉が空です。このままだと文字なしで作られます。"; wn.className = "note warn"; }
+  else { wn.textContent = "文字を入れるときは、入れる言葉を書いてください（なるべく短く。ブランド名・キャラ名・他人の名前は入れない）。"; wn.className = "note"; }
+  const short = (s) => s ? esc(split(s)[0]) : "";
+  $("bar-sel").innerHTML =
+    "<div>①<b>" + (short(S.s1) || "水彩画（未選択）") + "</b>　②<b>" + (wantsText() ? short(S.s2) + (S.words.trim() ? "「" + esc(S.words.trim()) + "」" : "（言葉が空）") : "文字なし") + "</b></div>" +
+    "<div>③<b>" + (short(S.s3) || "おまかせ") + "</b>　④<b>" + (S.s4.length ? S.s4.length + "個" : "基本のみ") + "</b></div>";
+}
+
+function showDone(id) {
+  const el = $(id); el.hidden = false;
+  clearTimeout(el._t); el._t = setTimeout(() => { el.hidden = true; }, 1800);
+}
+function copyText(text, doneId) {
+  $("fallback").hidden = true;
+  let p;
+  try { p = navigator.clipboard.writeText(text); } catch (e) { p = Promise.reject(e); }
+  p.then(() => showDone(doneId)).catch(() => {
+    const fb = $("fallback"), ta = $("fallback-text");
+    ta.value = text; fb.hidden = false;
+    fb.scrollIntoView({ block: "center" });
+    ta.focus(); ta.select();
+  });
+}
+function badgeFor(mark) {
+  return { "★": '<span class="badge pop">★人気</span>', "◆": '<span class="badge orig">◆オリジナル</span>', "◎": '<span class="badge off">◎公式</span>', "○": '<span class="badge art">○記事</span>' }[mark] || "";
+}
+
+// ① 例の一覧
+for (const cat of DATA.categories) {
+  const box = document.createElement("div"); box.className = "cat";
+  const h = document.createElement("h3"); h.textContent = cat.name; box.appendChild(h);
+  const list = document.createElement("div"); list.className = "list";
+  for (const it of cat.items) {
+    const b = document.createElement("button");
+    b.className = "style-item"; b.type = "button"; b.dataset.text = it.text; b.dataset.mark = it.mark; b.setAttribute("aria-pressed", "false");
+    const [t, d] = split(it.text);
+    b.innerHTML = '<span class="n">' + it.n + '</span><span class="t">' + esc(t) + badgeFor(it.mark) + '</span>' + (d ? '<span class="d">' + esc(d) + '</span>' : "");
+    b.addEventListener("click", () => { S.s1 = S.s1 === it.text ? null : it.text; render(); });
+    list.appendChild(b);
+  }
+  box.appendChild(list); $("cats").appendChild(box);
+}
+$("legend1").textContent = DATA.legend1;
+document.querySelectorAll(".filter").forEach((fb) => fb.addEventListener("click", () => {
+  const f = fb.dataset.f;
+  document.querySelectorAll(".filter").forEach((x) => x.setAttribute("aria-pressed", String(x === fb)));
+  document.querySelectorAll(".cat").forEach((box) => {
+    let shown = 0;
+    box.querySelectorAll(".style-item").forEach((it) => {
+      const ok = f === "all" || (f === "pop" && it.dataset.mark === "★") || (f === "orig" && it.dataset.mark === "◆");
+      it.hidden = !ok; if (ok) shown++;
+    });
+    box.hidden = shown === 0;
+  });
+}));
+$("use-custom").addEventListener("click", () => {
+  const v = $("custom").value.trim();
+  if (!v) { $("custom").focus(); $("custom").placeholder = "言葉を入れてから押してください"; return; }
+  S.s1 = v; render();
+});
+$("custom").addEventListener("keydown", (e) => { if (e.key === "Enter") $("use-custom").click(); });
+
+// ②〜④ の選択肢
+function chips(containerId, items, onClick) {
+  const c = $(containerId);
+  for (const it of items) {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.dataset.text = it.text; b.setAttribute("aria-pressed", "false");
+    const [t, d] = split(it.text);
+    b.innerHTML = '<span class="t">' + esc(t) + badgeFor(it.mark) + '</span>' + (d ? '<span class="d">' + esc(d) + '</span>' : "");
+    b.addEventListener("click", () => { onClick(it.text); render(); });
+    c.appendChild(b);
+  }
+}
+chips("chips2", DATA.list2, (t) => { S.s2 = S.s2 === t ? null : t; });
+chips("chips3", DATA.list3, (t) => { S.s3 = S.s3 === t ? null : t; });
+chips("chips4", DATA.list4, (t) => { S.s4 = S.s4.includes(t) ? S.s4.filter((x) => x !== t) : S.s4.concat(t); });
+$("legend2").textContent = DATA.legend2;
+$("legend4").textContent = DATA.legend4;
+$("words").addEventListener("input", (e) => { S.words = e.target.value; render(); });
+$("tips").textContent = DATA.tips;
+
+$("copy-try").addEventListener("click", () => copyText(filledPrompt(), "done-try"));
+$("copy-bar").addEventListener("click", () => copyText(filledPrompt(), "done-bar"));
+$("reset").addEventListener("click", () => {
+  S.s1 = null; S.s2 = null; S.words = ""; S.s3 = null; S.s4 = [];
+  $("words").value = ""; $("custom").value = "";
+  render();
+});
+render();
+</script>
+</body>
+</html>
