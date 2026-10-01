@@ -124,6 +124,11 @@ button.next { align-self: flex-end; font: inherit; font-weight: 700; padding: 8p
 .filter-select select { font: inherit; font-size: 16px; font-weight: 400; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); min-width: 0; max-width: 100%; }
 .filter-select .count { font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
 section.info { display: flex; flex-direction: column; gap: 20px; }
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mode { font: inherit; font-weight: 700; font-size: 0.9rem; padding: 10px 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); cursor: pointer; }
+.mode[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.mode:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.two ul.points { font-size: 0.8rem; color: var(--muted); }
 .legend { margin: 0; font-size: 0.8rem; color: var(--muted); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { font: inherit; text-align: left; padding: 6px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; display: flex; flex-direction: column; min-width: 0; max-width: 100%; }
@@ -154,7 +159,16 @@ footer p { margin: 0; }
   <header>
     <h1><span>画風コピペシート</span></h1>
     <p class="lead">写真や絵を1枚、好きな画風に。ChatGPTに貼るプロンプトを、選ぶだけで作れます。</p>
-    <ol class="howto">
+    <div class="modes" role="group" aria-label="使い方を選ぶ">
+      <button class="mode" type="button" data-mode="1" aria-pressed="true">1枚で画風を変える</button>
+      <button class="mode" type="button" data-mode="2" aria-pressed="false">2枚を合わせる</button>
+    </div>
+    <ol class="howto" id="howto2" hidden>
+      <li><span>ChatGPTを開き、1枚目に人物や動物、2枚目に土台の写真を、この順番で添付する</span></li>
+      <li><span>このページで合わせ方と①〜④を選ぶ（①を選ばなければ写真のまま）</span></li>
+      <li><span>「全文をコピー」して、ChatGPTに貼って送る</span></li>
+    </ol>
+    <ol class="howto" id="howto1">
       <li><span>ChatGPTを開き、画像を1枚添付する</span></li>
       <li><span>このページで①〜④のタブを順に選ぶ（選ばなくてもOK）</span></li>
       <li><span>「全文をコピー」して、ChatGPTに貼って送る</span></li>
@@ -166,6 +180,20 @@ footer p { margin: 0; }
     <p>自動でコピーできませんでした。下の文字が選択されているので、長押し（またはCtrl+C）でコピーしてください。</p>
     <textarea id="fallback-text" readonly></textarea>
   </div>
+
+  <section class="block two" id="two" hidden>
+    <h2><span class="step">合成</span>2枚の合わせ方</h2>
+    <p class="note"><b>添付の順番</b>：1枚目＝人物や動物、2枚目＝土台の写真</p>
+    <div class="chips" id="chipsM">
+      <button class="chip" type="button" data-m="in" aria-pressed="true"><span class="t">差し込む</span><span class="d">2枚目の中に、1枚目の人物や動物を入れる</span></button>
+      <button class="chip" type="button" data-m="swap" aria-pressed="false"><span class="t">差し替える</span><span class="d">2枚目に写っている人や物を、1枚目の人物や動物に入れ替える</span></button>
+    </div>
+    <div class="custom">
+      <input id="mtext" type="text" autocomplete="off">
+    </div>
+    <p class="note" id="mnote"></p>
+    <ul class="points" id="notes2"></ul>
+  </section>
 
   <nav class="tabs" role="tablist" aria-label="選ぶ項目" id="tabs">
     <button class="tab" role="tab" id="tab-1" data-tab="1" aria-controls="p-1" aria-selected="true"><span class="tn">①雰囲気</span><span class="ts" id="ts-1"></span></button>
@@ -183,6 +211,7 @@ footer p { margin: 0; }
         <button class="use" id="use-custom">この言葉を使う</button>
       </div>
       <p class="note">作家名・スタジオ名・作品名・キャラ名・ブランド名は入れないでください。下の例から選んでもOKです。</p>
+      <p class="note" id="note1-two" hidden>2枚を合わせるときは、選ばなければ画風は変えずに写真のまま仕上がります。選ぶと、全体をその画風でそろえます。</p>
       <label class="filter-select" for="filter1">表示
         <select id="filter1">
           <option value="all">すべて</option>
@@ -238,7 +267,7 @@ footer p { margin: 0; }
         <button class="reset" id="reset">選択をリセット</button>
         <span class="done" id="done-try" hidden>コピーしました</span>
       </div>
-      <p class="note">選ばなかった項目はプロンプトに入りません（画風はやさしい水彩画、文字なし、縦横比は元の写真に近い形になります）。</p>
+      <p class="note" id="done-note"></p>
     </div>
     <div class="block">
       <h2>うまくいかないとき</h2>
@@ -252,7 +281,7 @@ footer p { margin: 0; }
       <ul class="points">
         <li>自分で撮った写真や、自分で描いた絵を使ってください。他人の作品や有名人の写真は使わないでください。</li>
         <li>人が写っている写真は、写っている人の了承を取ってから使ってください。</li>
-        <li>できた画像をSNSに載せるときは、AIで作った画像だと分かるようにするのがおすすめです。</li>
+        <li>SNSに載せるときは、それぞれのSNSが決めているAI画像のルールに従ってください。</li>
         <li>同じプロンプトでも、出来は毎回変わります。ChatGPTのプランや作れる枚数は変わることがあります。</li>
       </ul>
       <details>
@@ -285,7 +314,8 @@ footer p { margin: 0; }
 <script>
 const DATA = /*__DATA__*/null;
 const $ = (id) => document.getElementById(id);
-const S = { s1: null, s2: [], w2: {}, s3: null, s4: [] };
+const S = { s1: null, s2: [], w2: {}, s3: null, s4: [], mode: 1, m: "in", mtext: "" };
+const KEEP2 = (t) => t.startsWith("元の画像の文字を残す");
 const MAX2 = 3;
 const NONE2 = (t) => t.startsWith("なし");
 
@@ -312,7 +342,34 @@ function buildLines() {
   const kind = S.s1 && DATA.photo.includes(S.s1) ? "写真" : "絵";
   return { style, hasText, extra, kind };
 }
+// 2枚モード：1枚目を2枚目に差し込む／2枚目の人や物と差し替える
+function filledPrompt2() {
+  const P = DATA.parts, Q = DATA.parts2;
+  const how = S.m === "in"
+    ? Q["差し込む"].replace("{{場所}}", S.mtext.trim() || Q["場所の既定"])
+    : Q["差し替える"].replace("{{相手}}", S.mtext.trim() || Q["相手の既定"]);
+  const pairs = S.s2.some(NONE2) ? [] : filledWords().filter((t) => !KEEP2(t));
+  const extra = [];
+  if (S.s1) {
+    extra.push(Q["画風あり"].replace("{{画風}}", S.s1));
+    if (DATA.photo.includes(S.s1)) extra.push(P["質感（写真）"]);
+  } else extra.push(Q["画風そのまま"]);
+  if (pairs.length) {
+    extra.push(Q["文字あり"].replace("{{組}}", pairs.map((t) => "【" + t + "】「" + S.w2[t].trim() + "」").join("／")));
+    // 画風の説明に「文字なし」「吹き出しなし」があるときだけ、文字を優先する一文を入れる
+    if (S.s1 && /文字なし|吹き出し|文字は入れない/.test(S.s1)) extra.push(P["文字の優先"]);
+  }
+  const ratio = S.s3 && !S.s3.startsWith("おまかせ");
+  extra.push(ratio ? Q["縦横比あり"].replace("{{比率}}", S.s3) : Q["縦横比なし"]);
+  if (S.s4.length) extra.push(P["避けること"].replace("{{項目}}", S.s4.join("／")));
+  extra.push(Q["除外"]);
+  return DATA.core2.replace("{{合成のしかた}}", how)
+    .replace("{{主役の行}}", S.s1 ? Q["主役（画風あり）"] : Q["主役（画風なし）"])
+    .replace("{{足さない行}}", pairs.length ? Q["足さない（文字あり）"] : Q["足さない（文字なし）"])
+    .replace("{{追加}}", extra.join("\n"));
+}
 function filledPrompt() {
+  if (S.mode === 2) return filledPrompt2();
   const b = buildLines();
   return DATA.core.replace("{{画風}}", b.style)
     .replace("{{作り方}}", DATA.parts["作り方（" + b.kind + "）"])
@@ -327,6 +384,7 @@ function previewHtml(p) {
   filledWords().forEach((t) => marks.push(t, "「" + S.w2[t].trim() + "」"));
   if (S.s3 && !S.s3.startsWith("おまかせ")) marks.push(S.s3);
   S.s4.forEach((t) => marks.push(t));
+  if (S.mode === 2 && S.mtext.trim()) marks.push(S.mtext.trim());
   let e = esc(p);
   const OPEN = "\u0000", CLOSE = "\u0001";
   for (const m of marks.sort((a, b) => b.length - a.length)) { const em = esc(m); e = e.split(em).join(OPEN + em + CLOSE); }
@@ -359,13 +417,24 @@ function render() {
   else if (empty.length) { wn.textContent = "言葉が空の欄があります（" + empty.map((t) => split(t)[0]).join("・") + "）。空の欄の文字は入りません。"; wn.className = "note warn"; }
   else if (textPairs().length >= 2) { wn.textContent = "文字が多いほど崩れやすいので、言葉はなるべく短くするのがおすすめです。"; wn.className = "note"; }
   else { wn.textContent = "言葉はなるべく短く。ブランド名・キャラ名・他人の名前・電話番号などは入れないでください。"; wn.className = "note"; }
-  $("ts-1").textContent = S.s1 ? split(S.s1)[0] : "水彩画";
+  const two = S.mode === 2;
+  $("ts-1").textContent = S.s1 ? split(S.s1)[0] : (two ? "そのまま" : "水彩画");
+  document.querySelectorAll("#chipsM .chip").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.m === S.m)));
+  $("mtext").placeholder = S.m === "in" ? "入れる場所（任意）例：右側のベンチに座らせる" : "入れ替える相手 例：左から2番目の人";
+  const mn = $("mnote");
+  if (S.m === "swap" && !S.mtext.trim()) { mn.textContent = "入れ替える相手が空です。このままだと、2枚目でいちばん目立つ人物が入れ替わります。"; mn.className = "note warn"; }
+  else if (S.m === "in" && !S.mtext.trim()) { mn.textContent = "場所を書かないと、ChatGPTが自然な場所を選びます。"; mn.className = "note"; }
+  else { mn.textContent = ""; mn.className = "note"; }
+  $("done-note").textContent = two
+    ? "選ばなかった項目はプロンプトに入りません（画風は写真のまま、文字なし、縦横比は2枚目と同じになります）。"
+    : "選ばなかった項目はプロンプトに入りません（画風はやさしい水彩画、文字なし、縦横比は元の写真に近い形になります）。";
   $("ts-2").textContent = filledWords().length ? filledWords().length + "か所" : "文字なし";
   $("ts-3").textContent = S.s3 ? split(S.s3)[0].replace(/^(縦長|横長|正方形) /, "") : "おまかせ";
   $("ts-4").textContent = S.s4.length ? S.s4.length + "個" : "基本のみ";
   const short = (s) => s ? esc(split(s)[0]) : "";
   $("bar-sel").innerHTML =
-    "<div>①<b>" + (short(S.s1) || "水彩画（未選択）") + "</b>　②<b>" + (filledWords().length ? filledWords().map((t) => short(t) + "「" + esc(S.w2[t].trim()) + "」").join("・") : "文字なし") + "</b></div>" +
+    (two ? "<div>合成<b>" + (S.m === "in" ? "差し込む" : "差し替える") + "</b></div>" : "") +
+    "<div>①<b>" + (short(S.s1) || (two ? "画風そのまま" : "水彩画（未選択）")) + "</b>　②<b>" + (filledWords().length ? filledWords().map((t) => short(t) + "「" + esc(S.w2[t].trim()) + "」").join("・") : "文字なし") + "</b></div>" +
     "<div>③<b>" + (short(S.s3) || "おまかせ") + "</b>　④<b>" + (S.s4.length ? S.s4.length + "個" : "基本のみ") + "</b></div>";
 }
 
@@ -456,14 +525,27 @@ chips("chips2", DATA.list2, (t) => {
 chips("chips3", DATA.list3, (t) => { S.s3 = S.s3 === t ? null : t; });
 chips("chips4", DATA.list4, (t) => { S.s4 = S.s4.includes(t) ? S.s4.filter((x) => x !== t) : S.s4.concat(t); });
 $("legend2").textContent = DATA.legend2;
+DATA.notes2.forEach((n) => { const li = document.createElement("li"); li.textContent = n; $("notes2").appendChild(li); });
+function setMode(m) {
+  S.mode = m;
+  document.querySelectorAll(".mode").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.mode === m)));
+  $("two").hidden = m !== 2; $("howto1").hidden = m === 2; $("howto2").hidden = m !== 2; $("note1-two").hidden = m !== 2;
+  // 2枚モードでは「元の画像の文字を残す」は使わない（2枚目の文字はもともと残すため）
+  document.querySelectorAll("#chips2 .chip").forEach((c) => { if (KEEP2(c.dataset.text)) c.hidden = m === 2; });
+  if (m === 2) { S.s2 = S.s2.filter((t) => !KEEP2(t)); renderWords(); }
+  render();
+}
+document.querySelectorAll(".mode").forEach((b) => b.addEventListener("click", () => setMode(+b.dataset.mode)));
+document.querySelectorAll("#chipsM .chip").forEach((b) => b.addEventListener("click", () => { S.m = b.dataset.m; render(); }));
+$("mtext").addEventListener("input", (e) => { S.mtext = e.target.value; render(); });
 $("legend4").textContent = DATA.legend4;
 $("tips").textContent = DATA.tips;
 
 $("copy-try").addEventListener("click", () => copyText(filledPrompt(), "done-try"));
 $("copy-bar").addEventListener("click", () => copyText(filledPrompt(), "done-bar"));
 $("reset").addEventListener("click", () => {
-  S.s1 = null; S.s2 = []; S.w2 = {}; S._max2 = false; S.s3 = null; S.s4 = [];
-  $("custom").value = ""; renderWords();
+  S.s1 = null; S.s2 = []; S.w2 = {}; S._max2 = false; S.s3 = null; S.s4 = []; S.m = "in"; S.mtext = "";
+  $("custom").value = ""; $("mtext").value = ""; renderWords();
   render();
 });
 // タブ
