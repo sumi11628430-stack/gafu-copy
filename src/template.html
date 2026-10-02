@@ -234,7 +234,7 @@ body.sheet-open { overflow: hidden; }
     </div>
     <p class="note" id="mnote"></p>
     <details class="notes2">
-      <summary>使う前に確認すること（7項目）</summary>
+      <summary>使う前に確認すること（<span id="notes2-count"></span>項目）</summary>
       <ul class="points" id="notes2"></ul>
     </details>
   </section>
@@ -347,7 +347,7 @@ body.sheet-open { overflow: hidden; }
         <li>自分で撮った写真や自分で描いた絵か、加工してよいと許可されている画像を使ってください。他人の作品・キャラクター・有名人の画像は、加工まで許可されている場合や、本人の了承がある場合だけにしてください。</li>
         <li>人が写っている写真は、写っている本人（18歳未満の人は保護者）の了承を得てから使ってください。</li>
         <li>SNSに載せるときは、それぞれのSNSが決めているAI画像のルールに従ってください。</li>
-        <li>同じプロンプトでも、出来は毎回変わります。ChatGPTのプランや作れる枚数は変わることがあります。</li>
+        <li>同じプロンプトでも、出来は毎回変わります。使うAIやモデルによっても、仕上がりに差が出ます。ChatGPTのプランや作れる枚数は変わることがあります。</li>
       </ul>
       <details>
         <summary>★・◆・◎・○の印について</summary>
@@ -660,6 +660,7 @@ chips("chips3", DATA.list3, (t) => { S.s3 = S.s3 === t ? null : t; });
 chips("chips4", DATA.list4, (t) => { S.s4 = S.s4.includes(t) ? S.s4.filter((x) => x !== t) : S.s4.concat(t); });
 $("legend2").textContent = DATA.legend2;
 DATA.notes2.forEach((n) => { const li = document.createElement("li"); li.textContent = n; $("notes2").appendChild(li); });
+$("notes2-count").textContent = DATA.notes2.length;
 function setMode(m) {
   S.mode = m;
   const three = m === 3;

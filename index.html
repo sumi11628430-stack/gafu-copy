@@ -58,17 +58,21 @@ h2 { font-size: 1.5rem; }
 h2 span, h1 span { background: linear-gradient(transparent 62%, var(--hl) 62%, var(--hl) 92%, transparent 92%); }
 .sec { display: flex; flex-direction: column; gap: 16px; }
 .sec > p { margin: 0; color: var(--muted); }
+.sec > p.fn { margin-top: -8px; font-size: .8rem; }
 
 /* 1画面目 */
 .hero { min-height: min(100svh, 860px); display: grid; align-content: center; gap: 22px; padding-block: 28px 12px; }
-.hero h1 { font-size: clamp(2.2rem, 9vw, 3.4rem); line-height: 1.2; }
+.hero h1 { font-size: clamp(1.9rem, 9vw, 3.4rem); line-height: 1.2; }
 .catch { margin: 0; font-size: 1.15rem; font-weight: 700; }
 .catch small { display: block; font-size: .9rem; font-weight: 400; color: var(--muted); }
 .ba { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
 .ba figure { margin: 0; display: flex; flex-direction: column; gap: 6px; }
 .ba figcaption { font-size: .8rem; color: var(--muted); text-align: center; }
-.ba svg { width: 100%; height: auto; border-radius: 14px; box-shadow: var(--card-shadow); display: block; }
+.ba img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 14px; box-shadow: var(--card-shadow); display: block; }
+.credit { margin: -8px 0 0; font-size: .75rem; color: var(--muted); text-align: center; }
 .arrow { font-size: 1.6rem; color: var(--accent); font-weight: 700; }
+.ba .arrow { font-size: 2.4rem; line-height: 1; }
+.nb { display: inline-block; } /* 文の切れ目でだけ改行する */
 .cta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-decoration: none; text-align: center; font-weight: 700; padding: 14px 10px; border-radius: 14px; border: 1px solid var(--accent); min-height: 64px; }
 .btn small { font-weight: 400; font-size: .75rem; opacity: .85; }
@@ -90,11 +94,13 @@ h2 span, h1 span { background: linear-gradient(transparent 62%, var(--hl) 62%, v
 /* 画風の見本 */
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .card { text-decoration: none; color: inherit; background: var(--sheet); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--card-shadow); display: flex; flex-direction: column; }
-.card svg { width: 100%; height: auto; display: block; }
+.card .pic.wide { aspect-ratio: 3 / 2; }
 .card div { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 2px; }
 .card b { font-size: .9rem; }
 .card span { font-size: .75rem; color: var(--muted); }
 .more { justify-self: start; }
+.gallery.g8, .gallery.g6 { grid-template-columns: repeat(2, minmax(0, 1fr)); } /* 見本8枚・もしもの作例6枚：スマホは2列 */
+@media (min-width: 700px) { .gallery.g8 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .gallery.g6 { grid-template-columns: repeat(3, minmax(0, 1fr)); } } /* PCは 4列×2段・3列×2段 */
 .card .pic { position: relative; display: block; aspect-ratio: 1; font-size: 0; }
 .card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card .pic img.before { position: absolute; left: 8px; bottom: 8px; width: 32%; height: auto; aspect-ratio: 1; border-radius: 8px; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0, 0, 0, .35); }
@@ -102,7 +108,7 @@ h2 span, h1 span { background: linear-gradient(transparent 62%, var(--hl) 62%, v
 /* 2枚を合わせる */
 .two { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 8px; }
 .two figure { margin: 0; display: flex; flex-direction: column; gap: 4px; text-align: center; font-size: .78rem; color: var(--muted); }
-.two svg { width: 100%; height: auto; border-radius: 12px; box-shadow: var(--card-shadow); }
+.two img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 12px; box-shadow: var(--card-shadow); display: block; }
 .ops { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
 .ops div { background: var(--sheet); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; }
 .ops b { display: block; }
@@ -113,44 +119,22 @@ h2 span, h1 span { background: linear-gradient(transparent 62%, var(--hl) 62%, v
 .end { text-align: center; display: flex; flex-direction: column; gap: 14px; align-items: stretch; }
 footer { font-size: .78rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 4px; }
 footer p { margin: 0; }
-@media (max-width: 420px) { .two { grid-template-columns: 1fr auto 1fr; } .two .eq, .two figure.res { grid-column: 1 / -1; } .two .eq { justify-self: center; transform: rotate(90deg); } }
+@media (max-width: 420px) { .two { grid-template-columns: 1fr auto 1fr; } .two .eq, .two figure.res { grid-column: 1 / -1; } .two .eq { justify-self: center; font-size: 0; } .two .eq::after { content: "↓"; font-size: 1.6rem; } }
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <!-- 見本の小さな絵（山・太陽・湖・人） -->
-    <linearGradient id="skyP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb8f0"/><stop offset="1" stop-color="#e3f1ff"/></linearGradient>
-    <radialGradient id="sunP"><stop offset="0" stop-color="#fff3c4"/><stop offset=".6" stop-color="#ffd36b"/><stop offset="1" stop-color="#ffd36b" stop-opacity="0"/></radialGradient>
-    <linearGradient id="mtP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5b7c99"/><stop offset="1" stop-color="#86a6c0"/></linearGradient>
-    <linearGradient id="lakeP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd0e8"/><stop offset="1" stop-color="#5f9fc4"/></linearGradient>
-    <filter id="wc" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="3" seed="3"/><feDisplacementMap in="SourceGraphic" scale="5"/><feGaussianBlur stdDeviation=".6"/></filter>
-    <filter id="sketch"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="2"/><feDisplacementMap in="SourceGraphic" scale="1.4"/></filter>
-    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    <pattern id="hatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><line x1="0" y1="0" x2="0" y2="3" stroke="#7a7a7a" stroke-width=".7"/></pattern>
-    <pattern id="hatch2" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><line x1="0" y1="0" x2="0" y2="3" stroke="#555" stroke-width=".8"/></pattern>
-    <g id="sceneP">
-      <rect width="120" height="90" fill="url(#skyP)"/>
-      <circle cx="88" cy="24" r="16" fill="url(#sunP)"/><circle cx="88" cy="24" r="8" fill="#ffd36b"/>
-      <polygon points="0,66 26,36 44,54 66,30 92,52 120,40 120,72 0,72" fill="url(#mtP)"/>
-      <rect y="70" width="120" height="20" fill="url(#lakeP)"/>
-      <path d="M0 72 Q30 68 60 71 T120 70 V74 H0Z" fill="#7fb07a"/>
-      <circle cx="38" cy="58" r="3" fill="#2d3a4a"/><path d="M34.5 72 L35.5 62 Q38 60.5 40.5 62 L41.5 72Z" fill="#c2564e"/>
-    </g>
-  </defs>
-</svg>
-
 <div class="wrap">
   <header class="hero">
     <h1><span>画風コピペシート</span></h1>
-    <p class="catch">写真1枚を、好きな画風に。もしもの姿にも。<small>ChatGPTに貼るプロンプトを、選ぶだけで作れます。</small></p>
-    <div class="ba" aria-label="見本：元の写真を水彩画に描き直した例">
-      <figure><svg viewBox="0 0 120 90" role="img" aria-label="元の写真の見本"><use href="#sceneP"/></svg><figcaption>元の写真</figcaption></figure>
+    <p class="catch"><span class="nb">写真1枚を、好きな画風に。</span><span class="nb">もしもの姿にも。</span><small>ChatGPTに貼るプロンプトを、選ぶだけで作れます。</small></p>
+    <div class="ba" aria-label="見本：元の写真をやさしい水彩画に描き直した例">
+      <figure><img src="images/gafu/base.webp" width="960" height="640" alt="元の写真（AIで作った架空の女性と柴犬が、湖のほとりのベンチに座る写真）" fetchpriority="high"><figcaption>元の写真</figcaption></figure>
       <div class="arrow" aria-hidden="true">→</div>
-      <figure><svg viewBox="0 0 120 90" role="img" aria-label="水彩画にした見本"><rect width="120" height="90" fill="#fbf7ef"/><g filter="url(#wc)" opacity=".88"><use href="#sceneP"/></g></svg><figcaption>やさしい水彩画に</figcaption></figure>
+      <figure><img src="images/gafu/hero.webp" width="960" height="640" alt="やさしい水彩画に描き直した見本"><figcaption>やさしい水彩画に</figcaption></figure>
     </div>
+    <p class="credit">見本は、AIで作った架空の人物と犬の写真を、このページのプロンプトを使ってChatGPTで描き直したものです</p>
     <div class="cta">
-      <a class="btn primary" href="sheet/">1枚で画風を変える<small>写真を好きな画風に描き直す</small></a>
+      <a class="btn primary" href="sheet/">1枚で画風を変える<small><span class="nb">写真を好きな画風に</span><span class="nb">描き直す</span></small></a>
       <a class="btn secondary" href="sheet/?mode=2">2枚を合わせる<small>人物や動物を、別の写真に入れる</small></a>
       <a class="btn moshi" href="sheet/?mode=3">もしもシリーズ<small>もしもあなたが〇〇だったら</small></a>
     </div>
@@ -169,15 +153,19 @@ footer p { margin: 0; }
 
   <section class="sec" id="styles">
     <h2><span>画風の見本</span></h2>
-    <p>同じ絵を、画風だけ変えるとこうなります（このページ用に描いた見本の絵です）。タップすると、その画風を選んだ状態で始められます。</p>
-    <div class="gallery">
-      <a class="card" href="sheet/?s=1"><svg viewBox="0 0 120 90" aria-hidden="true"><rect width="120" height="90" fill="#fbf7ef"/><g filter="url(#wc)" opacity=".88"><use href="#sceneP"/></g></svg><div><b>やさしい水彩画</b><span>にじみと淡い色</span></div></a>
-      <a class="card" href="sheet/?s=8"><svg viewBox="0 0 120 90" aria-hidden="true"><rect width="120" height="90" fill="#efe3c8"/><g stroke="#1f1f1f" stroke-width="1.4" stroke-linejoin="round"><rect x="0" y="0" width="120" height="70" fill="#b9d3df" stroke="none"/><path d="M0 14H120M0 22H120" stroke="#a2c2d1" stroke-width="3"/><circle cx="88" cy="24" r="8" fill="#e2553a"/><polygon points="0,66 26,36 44,54 66,30 92,52 120,40 120,72 0,72" fill="#3f6382"/><polygon points="26,36 21,42 31,42" fill="#f4f1e8"/><polygon points="66,30 60,37 72,37" fill="#f4f1e8"/><rect y="70" width="120" height="20" fill="#2f5d84"/><path d="M4 80q4-5 8 0t8 0 8 0 8 0 8 0 8 0 8 0 8 0 8 0 8 0 8 0 8 0 8 0 8 0" fill="none" stroke="#f4f1e8"/><circle cx="38" cy="58" r="3" fill="#1f1f1f"/><path d="M34.5 72L35.5 62Q38 60.5 40.5 62L41.5 72Z" fill="#b5352d"/></g></svg><div><b>浮世絵の木版画</b><span>太い輪郭線と平らな色</span></div></a>
-      <a class="card" href="sheet/?s=39"><svg viewBox="0 0 24 18" shape-rendering="crispEdges" aria-hidden="true" class="pixel" data-px="1"></svg><div><b>粗いドット絵</b><span>大きな四角い粒と少ない色数</span></div></a>
-      <a class="card" href="sheet/?s=16"><svg viewBox="0 0 120 90" aria-hidden="true"><rect width="120" height="90" fill="#1d1d24"/><g stroke="#16161c" stroke-width="2.2" stroke-linejoin="round"><polygon points="0,0 40,0 30,30 0,26" fill="#4f8fd6"/><polygon points="40,0 80,0 74,20 30,30" fill="#7fb6ec"/><polygon points="80,0 120,0 120,30 98,34 74,20" fill="#5b9be0"/><polygon points="0,26 30,30 26,36 0,66" fill="#9cc8f2"/><polygon points="30,30 74,20 66,30 44,54 26,36" fill="#6aa5e6"/><polygon points="74,20 98,34 120,30 120,40 92,52 66,30" fill="#8ec0f0"/><circle cx="88" cy="24" r="8" fill="#ffd54a"/><polygon points="0,66 26,36 44,54 0,72" fill="#7b4fb0"/><polygon points="44,54 66,30 92,52 60,72 0,72" fill="#9a63c8"/><polygon points="92,52 120,40 120,72 60,72" fill="#6c43a0"/><polygon points="0,72 60,72 50,90 0,90" fill="#3fa7a0"/><polygon points="60,72 120,72 120,90 50,90" fill="#2e8d8a"/><circle cx="38" cy="58" r="3" fill="#e8b06a"/><path d="M34.5 72L35.5 62Q38 60.5 40.5 62L41.5 72Z" fill="#d1453c"/></g></svg><div><b>ステンドグラス</b><span>黒い縁取りと光を通す色</span></div></a>
-      <a class="card" href="sheet/?s=45"><svg viewBox="0 0 120 90" aria-hidden="true"><rect width="120" height="90" fill="#0c0e1c"/><g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"><circle cx="88" cy="24" r="8" stroke="#ff5bd6" stroke-width="1.6"/><polyline points="0,66 26,36 44,54 66,30 92,52 120,40" stroke="#41d9ff" stroke-width="1.6"/><path d="M0 72 Q30 68 60 71 T120 70" stroke="#7dff8a" stroke-width="1.3"/><path d="M10 80H50M60 84H110" stroke="#41d9ff" stroke-width=".8" opacity=".7"/><circle cx="38" cy="58" r="3" stroke="#ffe66b" stroke-width="1.2"/><path d="M35 72L36 62Q38 61 40 62L41 72" stroke="#ffe66b" stroke-width="1.2"/></g></svg><div><b>ネオンサイン</b><span>暗い背景に光る色の線</span></div></a>
-      <a class="card" href="sheet/?s=6"><svg viewBox="0 0 120 90" aria-hidden="true"><rect width="120" height="90" fill="#f5f3ee"/><g filter="url(#sketch)" stroke="#3d3d3d" stroke-width=".8" stroke-linejoin="round"><circle cx="88" cy="24" r="8" fill="none"/><polygon points="0,66 26,36 44,54 66,30 92,52 120,40 120,72 0,72" fill="url(#hatch)"/><rect y="72" width="120" height="18" fill="url(#hatch2)" stroke="none"/><path d="M0 72 Q30 68 60 71 T120 70" fill="none"/><circle cx="38" cy="58" r="3" fill="#3d3d3d"/><path d="M34.5 72L35.5 62Q38 60.5 40.5 62L41.5 72Z" fill="url(#hatch2)"/></g></svg><div><b>鉛筆デッサン</b><span>白黒の濃淡と細かい線</span></div></a>
+    <p>同じ写真を、画風だけ変えて描き直した例です。タップすると、その画風を選んだ状態で始められます。</p>
+    <div class="gallery g8">
+      <a class="card" href="sheet/?s=1"><span class="pic wide"><img src="images/gafu/s01.webp" width="480" height="320" alt="やさしい水彩画の見本" loading="lazy"></span><div><b>やさしい水彩画</b><span>にじみと淡い色</span></div></a>
+      <a class="card" href="sheet/?s=16"><span class="pic wide"><img src="images/gafu/s16.webp" width="480" height="320" alt="ステンドグラスの見本" loading="lazy"></span><div><b>ステンドグラス</b><span>黒い縁と光る色ガラス</span></div></a>
+      <a class="card" href="sheet/?s=20"><span class="pic wide"><img src="images/gafu/s20.webp" width="480" height="320" alt="粘土細工の3Dの見本" loading="lazy"></span><div><b>粘土細工の3D</b><span>ころんとした粘土の立体</span></div></a>
+      <a class="card" href="sheet/?s=26"><span class="pic wide"><img src="images/gafu/s26.webp" width="480" height="320" alt="古典的な西洋絵画の見本" loading="lazy"></span><div><b>古典的な西洋絵画</b><span>深い陰影と重厚な色</span></div></a>
+      <a class="card" href="sheet/?s=33"><span class="pic wide"><img src="images/gafu/s33.webp" width="480" height="320" alt="ちびキャラの見本" loading="lazy"></span><div><b>ちびキャラ</b><span>大きな頭と目のデフォルメ</span></div></a>
+      <a class="card" href="sheet/?s=45"><span class="pic wide"><img src="images/gafu/s45.webp" width="480" height="320" alt="ネオンサインの見本" loading="lazy"></span><div><b>ネオンサイン</b><span>闇に光る色の縁取り</span></div></a>
+      <a class="card" href="sheet/?s=17"><span class="pic wide"><img src="images/gafu/s17.webp" width="480" height="320" alt="刺しゅうの見本" loading="lazy"></span><div><b>刺しゅう</b><span>糸の立体感とステッチ</span></div></a>
+      <a class="card" href="sheet/?s=39"><span class="pic wide"><img src="images/gafu/s39.webp" width="480" height="320" alt="粗いドット絵の見本" loading="lazy"></span><div><b>粗いドット絵</b><span>四角い粒で描くレトロ</span></div></a>
     </div>
+    <p>見本は、AIで作った架空の人物と犬の写真（いちばん上の「元の写真」）を、このページのプロンプトを使って、ChatGPTとOpenAIの画像生成で描き直したものです。</p>
+    <p class="fn">※ 仕上がりは、使うAIやモデルによって差が出ます。同じプロンプトでも、見本と同じにならないことがあります。</p>
     <a class="btn secondary more" href="sheet/">ほか全50種を見る</a>
   </section>
 
@@ -185,12 +173,14 @@ footer p { margin: 0; }
     <h2><span>2枚を合わせる</span></h2>
     <p>人物や動物の写真を、別の写真の中に入れられます。画風もいっしょに変えられます。</p>
     <div class="two" aria-label="1枚目と2枚目を合わせた例">
-      <figure><svg viewBox="0 0 60 60" aria-hidden="true"><rect width="60" height="60" fill="#f0e6da"/><circle cx="30" cy="22" r="9" fill="#2d3a4a"/><path d="M18 60 L20 38 Q30 32 40 38 L42 60Z" fill="#c2564e"/></svg>1枚目：人物や動物</figure>
+      <figure><img src="images/gafu/two-1.webp" width="480" height="320" alt="1枚目：ソファに座る三毛猫（AIで作った架空の猫）の写真" loading="lazy">1枚目：人物や動物</figure>
       <div class="arrow" aria-hidden="true">＋</div>
-      <figure><svg viewBox="0 0 120 90" aria-hidden="true"><rect width="120" height="90" fill="url(#skyP)"/><circle cx="88" cy="24" r="8" fill="#ffd36b"/><polygon points="0,66 26,36 44,54 66,30 92,52 120,40 120,72 0,72" fill="url(#mtP)"/><rect y="70" width="120" height="20" fill="url(#lakeP)"/><path d="M0 72 Q30 68 60 71 T120 70 V74 H0Z" fill="#7fb07a"/></svg>2枚目：土台の写真</figure>
+      <figure><img src="images/gafu/two-2.webp" width="480" height="320" alt="2枚目：海辺の遊歩道の写真（AIで作った写真）" loading="lazy">2枚目：土台の写真</figure>
       <div class="arrow eq" aria-hidden="true">＝</div>
-      <figure class="res"><svg viewBox="0 0 120 90" aria-hidden="true"><use href="#sceneP"/></svg>完成：2枚目の中に1枚目</figure>
+      <figure class="res"><img src="images/gafu/two-3.webp" width="960" height="640" alt="完成：海辺の遊歩道に三毛猫が入った見本" loading="lazy">完成：2枚目の中に1枚目</figure>
     </div>
+    <p>見本は、AIで作った架空の猫と海辺の写真を、このページのプロンプト（差し込む）を使ってOpenAIの画像生成で合わせたものです（3回作ったうち、2枚目にいちばん近いもの）。2枚目の背景も少し描き直されることがあり、この見本でも雲や水平線の位置が変わっています。</p>
+    <p class="fn">※ 仕上がりは、使うAIやモデルによって差が出ます。同じプロンプトでも、見本と同じにならないことがあります。</p>
     <div class="ops">
       <div><b>差し込む</b><span>2枚目の中に、1枚目の人物や動物を入れます。入れる場所も書けます。</span></div>
       <div><b>差し替える</b><span>2枚目に写っている人や物を、1枚目の人物や動物に入れ替えます。</span></div>
@@ -200,7 +190,7 @@ footer p { margin: 0; }
   <section class="sec" id="moshi">
     <h2><span>もしもシリーズ</span></h2>
     <p>「もしもあなたが〇〇だったら」を選ぶだけ。写真の人やペット、ぬいぐるみなどが、その姿に生まれ変わった1枚になります。似合うものをAIが選ぶ選択肢もあります。</p>
-    <div class="gallery">
+    <div class="gallery g6">
       <a class="card mcard" href="sheet/?mode=3&amp;m=4" data-moshi="戦国武将"><span class="pic"><img src="images/moshi/samurai.webp" width="480" height="480" alt="戦国武将の作例" loading="lazy"><img class="before" src="images/moshi/samurai-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>戦国武将</b><span>人も犬も、甲冑姿に</span></div></a>
       <a class="card mcard" href="sheet/?mode=3&amp;m=13" data-moshi="宇宙飛行士"><span class="pic"><img src="images/moshi/astro.webp" width="480" height="480" alt="宇宙飛行士の作例" loading="lazy"><img class="before" src="images/moshi/astro-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>宇宙飛行士</b><span>2人と犬が、そろって宇宙へ</span></div></a>
       <a class="card mcard" href="sheet/?mode=3&amp;m=28" data-moshi="箱入りのフィギュア"><span class="pic"><img src="images/moshi/figure.webp" width="480" height="480" alt="箱入りのフィギュアの作例" loading="lazy"><img class="before" src="images/moshi/figure-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>箱入りのフィギュア</b><span>持ち物は付属品に</span></div></a>
@@ -208,7 +198,8 @@ footer p { margin: 0; }
       <a class="card mcard" href="sheet/?mode=3&amp;m=43" data-moshi="一輪の花"><span class="pic"><img src="images/moshi/flower.webp" width="480" height="480" alt="一輪の花の作例" loading="lazy"><img class="before" src="images/moshi/flower-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>一輪の花</b><span>似合う花と称号を、AIが選ぶ</span></div></a>
       <a class="card mcard" href="sheet/?mode=3&amp;m=39" data-moshi="アニメの主人公"><span class="pic"><img src="images/moshi/anime.webp" width="480" height="480" alt="アニメの主人公の作例" loading="lazy"><img class="before" src="images/moshi/anime-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>アニメの主人公</b><span>架空の題名も、AIが考える</span></div></a>
     </div>
-    <p>作例は、AIで作った架空の人物・ペットの写真（左下の小さい写真）を、このページのプロンプトを使ってOpenAIの画像生成で変身させたものです。同じプロンプトでも、出来は毎回変わることがあります。</p>
+    <p>作例は、AIで作った架空の人物・ペットの写真（左下の小さい写真）を、このページのプロンプトを使ってOpenAIの画像生成で変身させたものです。</p>
+    <p class="fn">※ 仕上がりは、使うAIやモデルによって差が出ます。同じプロンプトでも、作例と同じにならないことがあります。</p>
     <a class="btn secondary more" href="sheet/?mode=3">もしも全48種を見る</a>
   </section>
 
@@ -220,14 +211,14 @@ footer p { margin: 0; }
       <li>合成・変身させた写真を、実際にあった出来事のように見せる使い方はしないでください。</li>
       <li>作品のキャラクターになる「もしも」で作った画像を、自分で見て楽しむ範囲を超えて使うときは、権利者が許可している範囲（ファン作品のガイドラインなど）で使ってください。</li>
       <li>SNSに載せるときは、それぞれのSNSが決めているAI画像のルールに従ってください。</li>
-      <li>同じプロンプトでも、出来は毎回変わります。ChatGPTのプランや作れる枚数は変わることがあります。</li>
+      <li>同じプロンプトでも、出来は毎回変わります。使うAIやモデルによっても、仕上がりに差が出ます。ChatGPTのプランや作れる枚数は変わることがあります。</li>
     </ul>
   </section>
 
   <section class="end">
     <h2><span>さっそく作ってみる</span></h2>
     <div class="cta">
-      <a class="btn primary" href="sheet/">1枚で画風を変える<small>写真を好きな画風に描き直す</small></a>
+      <a class="btn primary" href="sheet/">1枚で画風を変える<small><span class="nb">写真を好きな画風に</span><span class="nb">描き直す</span></small></a>
       <a class="btn secondary" href="sheet/?mode=2">2枚を合わせる<small>人物や動物を、別の写真に入れる</small></a>
       <a class="btn moshi" href="sheet/?mode=3">もしもシリーズ<small>もしもあなたが〇〇だったら</small></a>
     </div>
@@ -239,25 +230,5 @@ footer p { margin: 0; }
   </footer>
 </div>
 
-<script>
-// ドット絵の見本：見本の絵の色を、粗い粒に置き換えて描く
-(function () {
-  const W = 24, H = 18, svg = document.querySelector("svg.pixel");
-  function color(x, y) {
-    const X = (x + 0.5) * 5, Y = (y + 0.5) * 5; // 120x90 の座標に戻す
-    if (Math.hypot(X - 38, Y - 58) < 3.5) return "#2d3a4a";
-    if (X > 34 && X < 42 && Y > 61 && Y < 72) return "#c2564e";
-    if (Math.hypot(X - 88, Y - 24) < 9) return "#ffd36b";
-    const ridge = (X < 26) ? 66 - X * 30 / 26 : (X < 44) ? 36 + (X - 26) * 18 / 18 : (X < 66) ? 54 - (X - 44) * 24 / 22 : (X < 92) ? 30 + (X - 66) * 22 / 26 : 52 - (X - 92) * 12 / 28;
-    if (Y > 74) return Y > 82 ? "#4f8fb8" : "#7fb6d8";
-    if (Y > 70) return "#7fb07a";
-    if (Y > ridge) return Y > ridge + 12 ? "#7f9fb8" : "#5b7c99";
-    return Y < 30 ? "#7fb8f0" : "#bcdcfa";
-  }
-  let s = "";
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) s += '<rect x="' + x + '" y="' + y + '" width="1" height="1" fill="' + color(x, y) + '"/>';
-  svg.innerHTML = s;
-})();
-</script>
 </body>
 </html>
