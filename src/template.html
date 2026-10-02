@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>画風コピペシート</title>
-<meta name="description" content="写真1枚を好きな画風に。ChatGPTに貼るプロンプトを、雰囲気・文字・縦横比・入れないものを選ぶだけで作れます。">
+<meta name="description" content="写真1枚を好きな画風に。もしもの姿にも。ChatGPTに貼るプロンプトを、選ぶだけで作れます。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="画風コピペシート">
 <meta property="og:description" content="写真1枚を好きな画風に。ChatGPTに貼るプロンプトを、選ぶだけで作れます。画風の例50つき。">
@@ -124,8 +124,8 @@ button.next { align-self: flex-end; font: inherit; font-weight: 700; padding: 8p
 .filter-select select { font: inherit; font-size: 16px; font-weight: 400; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); min-width: 0; max-width: 100%; }
 .filter-select .count { font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
 section.info { display: flex; flex-direction: column; gap: 20px; }
-.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.mode { font: inherit; font-weight: 700; font-size: 0.9rem; padding: 10px 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); cursor: pointer; }
+.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.mode { word-break: auto-phrase; font: inherit; font-weight: 700; font-size: 0.9rem; padding: 10px 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); cursor: pointer; }
 .mode[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .mode:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .two ul.points { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
@@ -154,7 +154,38 @@ footer p { margin: 0; }
 .fallback { display: flex; flex-direction: column; gap: 6px; }
 .fallback textarea { width: 100%; min-height: 140px; font: inherit; font-size: 0.85rem; padding: 10px; border-radius: 8px; border: 1px solid var(--warn); background: var(--paper); color: var(--ink); }
 .fallback p { margin: 0; font-size: 0.85rem; color: var(--warn); font-weight: 700; }
-@media (prefers-reduced-motion: no-preference) { .style-item, .chip, button { transition: background-color .15s, border-color .15s; } }
+/* もしもシリーズ */
+.seg { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.seg button { font: inherit; font-size: 0.88rem; font-weight: 700; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.fchips { display: flex; gap: 6px; overflow-x: auto; margin-inline: -16px; padding: 2px 16px 6px; scrollbar-width: thin; }
+.fchips button { flex: 0 0 auto; font: inherit; font-size: 0.82rem; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; white-space: nowrap; }
+.fchips button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.mlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.mcard { text-align: left; font: inherit; display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; min-width: 0; }
+.mcard .t { font-weight: 700; font-size: 0.95rem; line-height: 1.35; word-break: auto-phrase; overflow-wrap: anywhere; }
+.mcard .h { font-size: 0.74rem; color: var(--muted); line-height: 1.4; }
+.mcard .b, .mbadges { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; }
+.mcard .badge, .mbadges .badge { margin-left: 0; }
+.badge.ai { background: var(--accent-soft); color: var(--accent); }
+.badge.aim { background: var(--orig-soft); color: var(--orig); }
+.legend .count { font-variant-numeric: tabular-nums; }
+.msheet-back { position: fixed; inset: 0; background: rgba(20, 24, 34, .45); z-index: 20; }
+.msheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; max-height: 88vh; max-height: 88dvh; overflow-y: auto; overscroll-behavior: contain; background-color: var(--paper); background-image: var(--grain); border-top: 1px solid var(--line); border-radius: 20px 20px 0 0; box-shadow: 0 -12px 40px -20px rgba(0, 0, 0, .5); padding: 0 16px calc(16px + env(safe-area-inset-bottom, 0px)); }
+.msheet-in { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.msheet-head { position: sticky; top: 0; z-index: 1; background-color: var(--paper); padding: 14px 0 8px; display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.msheet-head h2 { font-family: var(--font-display); font-size: 1.15rem; line-height: 1.4; margin: 0; min-width: 0; word-break: auto-phrase; overflow-wrap: anywhere; }
+.msheet-close { font: inherit; font-size: 1.2rem; line-height: 1; width: 40px; height: 40px; flex: 0 0 auto; border-radius: 999px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); cursor: pointer; }
+button.copy.big { width: 100%; padding: 14px; font-size: 1.05rem; border-radius: 12px; }
+.mopt { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; color: var(--ink); }
+.mopt .lab { font-size: 0.8rem; font-weight: 700; color: var(--accent); margin-top: 4px; }
+.mopt select, .mopt input { font: inherit; font-size: 16px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); min-width: 0; max-width: 100%; }
+ul.mwarn { font-size: 0.82rem; color: var(--warn); }
+ul.mwarn:empty, .mbadges:empty { display: none; }
+body.sheet-open { overflow: hidden; }
+.seg button:focus-visible, .fchips button:focus-visible, .mcard:focus-visible, .msheet-close:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { .style-item, .chip, button { transition: background-color .15s, border-color .15s; } .msheet:not([hidden]) { animation: sheet-up .2s ease-out; } }
+@keyframes sheet-up { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
 </style>
 </head>
 <body>
@@ -162,15 +193,21 @@ footer p { margin: 0; }
   <header>
     <a class="toplink" href="../">← トップへ（使い方と見本）</a>
     <h1><span>画風コピペシート</span></h1>
-    <p class="lead">写真や絵を1枚、好きな画風に。ChatGPTに貼るプロンプトを、選ぶだけで作れます。</p>
+    <p class="lead">写真や絵を1枚、好きな画風に。もしもの姿にも。ChatGPTに貼るプロンプトを、選ぶだけで作れます。</p>
     <div class="modes" role="group" aria-label="使い方を選ぶ">
-      <button class="mode" type="button" data-mode="1" aria-pressed="true">1枚で画風を変える</button>
-      <button class="mode" type="button" data-mode="2" aria-pressed="false">2枚を合わせる</button>
+      <button class="mode" type="button" data-mode="1" aria-pressed="true">1枚で<wbr>画風を変える</button>
+      <button class="mode" type="button" data-mode="2" aria-pressed="false">2枚を<wbr>合わせる</button>
+      <button class="mode" type="button" data-mode="3" aria-pressed="false">もしも<wbr>シリーズ</button>
     </div>
     <ol class="howto" id="howto2" hidden>
       <li><span>ChatGPTを開き、1枚目に人物や動物、2枚目に土台の写真を、この順番で添付する</span></li>
       <li><span>このページで合わせ方と①〜④を選ぶ（①を選ばなければ写真のまま）</span></li>
       <li><span>「全文をコピー」して、ChatGPTに貼って送る</span></li>
+    </ol>
+    <ol class="howto" id="howto3" hidden>
+      <li><span>ChatGPTを開き、写真を1枚添付する</span></li>
+      <li><span>このページで「もしも」を1つ選ぶ</span></li>
+      <li><span>「プロンプトをコピー」して、ChatGPTに貼って送る</span></li>
     </ol>
     <ol class="howto" id="howto1">
       <li><span>ChatGPTを開き、画像を1枚添付する</span></li>
@@ -199,6 +236,27 @@ footer p { margin: 0; }
     <details class="notes2">
       <summary>使う前に確認すること（7項目）</summary>
       <ul class="points" id="notes2"></ul>
+    </details>
+  </section>
+
+  <section class="block moshi" id="moshi" hidden>
+    <h2><span class="step">もしも</span>もしもあなたが〇〇だったら</h2>
+    <p class="note">選ぶと、そのもしものプロンプトが出ます。写真の人やペット、ぬいぐるみ・置物・自分で描いたキャラの絵などが、その姿に生まれ変わった1枚になります。どの写真でも選べます（「人以外向け」の印があるものは、人だけの写真では作れません）。</p>
+    <div class="fchips" role="group" aria-label="しぼりこみ" id="mfilter"></div>
+    <p class="legend">★話題になったもの　◆このサイトで考えた案　<span class="count" id="mcount"></span></p>
+    <div class="cats" id="mcats"></div>
+    <ul class="points" id="mnotes-top"></ul>
+    <details>
+      <summary>くわしい注意</summary>
+      <ul id="mnotes-more"></ul>
+    </details>
+    <details>
+      <summary>★・◆の印について</summary>
+      <ul>
+        <li>★話題：2025〜2026年の記事で、話題・流行として取り上げられたもの（作品名を使わない言い方にしています）。<a href="https://www.itmedia.co.jp/aiplus/articles/2504/07/news157.html" target="_blank" rel="noopener">ITmedia</a>、<a href="https://rocketnews24.com/2026/04/23/2754463/" target="_blank" rel="noopener">ロケットニュース24</a>、<a href="https://www.euronews.com/next/2026/02/14/chatgpts-ai-caricature-social-media-trend-could-be-a-gift-to-fraudsters-experts-warn" target="_blank" rel="noopener">Euronews</a> などの記事をもとにしています。</li>
+        <li>◆このサイトで考えた案：検索してもあまり見つからなかったもの（出回っていないとは言い切れません）。</li>
+        <li>2026年10月時点の情報です。</li>
+      </ul>
     </details>
   </section>
 
@@ -282,12 +340,12 @@ footer p { margin: 0; }
     </div>
   </section>
 
-  <section class="info">
+  <section class="info" id="info">
     <div class="block">
       <h2>使う前に</h2>
       <ul class="points">
-        <li>自分で撮った写真や、自分で描いた絵を使ってください。他人の作品や有名人の写真は使わないでください。</li>
-        <li>人が写っている写真は、写っている人の了承を取ってから使ってください。</li>
+        <li>自分で撮った写真や自分で描いた絵か、加工してよいと許可されている画像を使ってください。他人の作品・キャラクター・有名人の画像は、加工まで許可されている場合や、本人の了承がある場合だけにしてください。</li>
+        <li>人が写っている写真は、写っている本人（18歳未満の人は保護者）の了承を得てから使ってください。</li>
         <li>SNSに載せるときは、それぞれのSNSが決めているAI画像のルールに従ってください。</li>
         <li>同じプロンプトでも、出来は毎回変わります。ChatGPTのプランや作れる枚数は変わることがあります。</li>
       </ul>
@@ -310,6 +368,66 @@ footer p { margin: 0; }
   </footer>
 </div>
 
+<div class="msheet-back" id="msheet-back" hidden></div>
+<div class="msheet" id="msheet" role="dialog" aria-modal="true" aria-labelledby="msheet-title" hidden>
+  <div class="msheet-in">
+    <div class="msheet-head">
+      <h2 id="msheet-title"></h2>
+      <button class="msheet-close" type="button" id="msheet-close" aria-label="閉じる">×</button>
+    </div>
+    <p class="mbadges" id="msheet-badges"></p>
+    <p class="note" id="msheet-hint"></p>
+    <ul class="points mwarn" id="msheet-notes"></ul>
+    <button class="copy big" type="button" id="mcopy">プロンプトをコピー</button>
+    <span class="done" id="mdone" hidden>コピーしました</span>
+    <p class="note">ChatGPTで写真を1枚添付して、貼り付けて送信します。</p>
+    <div class="fallback" id="mfallback" hidden>
+      <p>自動でコピーできませんでした。下の文字が選択されているので、長押し（またはCtrl+C）でコピーしてください。</p>
+      <textarea id="mfallback-text" readonly></textarea>
+    </div>
+    <details id="mfinish">
+      <summary>仕上げを変える <span class="count" id="mfinish-sum"></span></summary>
+      <div class="mopt">
+        <span class="lab" id="mlook-lab">仕上がり</span>
+        <div class="seg" role="group" aria-label="仕上がり" id="mlook">
+          <button type="button" data-v="写真">写真</button><button type="button" data-v="絵">絵</button>
+        </div>
+        <span class="lab">似せ方</span>
+        <div class="seg" role="group" aria-label="似せ方" id="mlike">
+          <button type="button" data-v="しっかり">しっかり（ポーズも写真に近く）</button><button type="button" data-v="のびのび">のびのび（ポーズは新しく）</button>
+        </div>
+        <span class="lab">華やかさ</span>
+        <div class="seg" role="group" aria-label="華やかさ" id="mgor">
+          <button type="button" data-v="ふつう">ふつう</button><button type="button" data-v="豪華">豪華</button>
+        </div>
+        <span class="lab" id="mlogo-lab" hidden>作品のロゴ・題字</span>
+        <div class="seg" role="group" aria-label="作品のロゴ・題字" id="mlogo" hidden>
+          <button type="button" data-v="なし">入れない</button><button type="button" data-v="あり">入れる</button>
+        </div>
+        <p class="note warn" id="mlogo-note" hidden>作品のロゴは商標で、権利がある場合があります。自分で見て楽しむ範囲を超えて使うときは、権利者が許可している範囲で使ってください。ChatGPTで作れないことや、形が正確に出ないこともあります。</p>
+        <label class="lab" for="mai">AIが考えて入れる文字</label>
+        <select id="mai"></select>
+        <label class="lab" for="mowntype">自分の言葉も入れる（1つまで）</label>
+        <select id="mowntype"></select>
+        <input id="mownword" type="text" autocomplete="off" aria-label="自分の言葉（画像に入れる言葉）" placeholder="入れる言葉（例：好きなことで、どこまでも）" hidden>
+        <p class="note" id="mown-note" hidden>言葉はなるべく短く。ブランド名・キャラ名・他人の名前・電話番号などは入れないでください。</p>
+        <label class="lab" for="mratio">縦横比</label>
+        <select id="mratio"></select>
+        <span class="lab">避けること（いくつでも）</span>
+        <div class="chips" id="mavoid"></div>
+      </div>
+    </details>
+    <details>
+      <summary>プロンプトの中身を見る</summary>
+      <pre class="text" id="mprompt"></pre>
+    </details>
+    <details>
+      <summary>うまくいかないとき</summary>
+      <pre class="text" id="mtips"></pre>
+    </details>
+  </div>
+</div>
+
 <div class="bar" id="bar">
   <div class="bar-inner">
     <div class="sel" id="bar-sel"></div>
@@ -321,7 +439,7 @@ footer p { margin: 0; }
 <script>
 const DATA = /*__DATA__*/null;
 const $ = (id) => document.getElementById(id);
-const S = { s1: null, s2: [], w2: {}, s3: null, s4: [], mode: 1, m: "in", mtext: "" };
+const S = { s1: null, s2: [], w2: {}, s3: null, s4: [], mode: 1, m: "in", mtext: "", tab: 1 };
 const KEEP2 = (t) => t.startsWith("元の画像の文字を残す");
 const MAX2 = 3;
 const NONE2 = (t) => t.startsWith("なし");
@@ -450,11 +568,12 @@ function showDone(id) {
   clearTimeout(el._t); el._t = setTimeout(() => { el.hidden = true; }, 1800);
 }
 function copyText(text, doneId) {
-  $("fallback").hidden = true;
+  $("fallback").hidden = true; $("mfallback").hidden = true;
+  const inSheet = !$("msheet").hidden;
   let p;
   try { p = navigator.clipboard.writeText(text); } catch (e) { p = Promise.reject(e); }
   p.then(() => showDone(doneId)).catch(() => {
-    const fb = $("fallback"), ta = $("fallback-text");
+    const fb = $(inSheet ? "mfallback" : "fallback"), ta = $(inSheet ? "mfallback-text" : "fallback-text");
     ta.value = text; fb.hidden = false;
     fb.scrollIntoView({ block: "center" });
     ta.focus(); ta.select();
@@ -486,7 +605,7 @@ DATA.categories.forEach((c, i) => { const o = document.createElement("option"); 
 sel1.appendChild(og);
 function applyFilter() {
   const f = sel1.value; let total = 0;
-  document.querySelectorAll(".cat").forEach((box, ci) => {
+  document.querySelectorAll("#cats .cat").forEach((box, ci) => {
     let shown = 0;
     box.querySelectorAll(".style-item").forEach((it) => {
       const m = it.dataset.mark;
@@ -535,8 +654,16 @@ $("legend2").textContent = DATA.legend2;
 DATA.notes2.forEach((n) => { const li = document.createElement("li"); li.textContent = n; $("notes2").appendChild(li); });
 function setMode(m) {
   S.mode = m;
+  const three = m === 3;
   document.querySelectorAll(".mode").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.mode === m)));
-  $("two").hidden = m !== 2; $("howto1").hidden = m === 2; $("howto2").hidden = m !== 2; $("note1-two").hidden = m !== 2;
+  $("two").hidden = m !== 2; $("howto1").hidden = m !== 1; $("howto2").hidden = m !== 2; $("howto3").hidden = !three; $("note1-two").hidden = m !== 2;
+  // もしもモードでは、①〜④のタブと下のバーを隠して、もしもの一覧だけを出す
+  $("moshi").hidden = !three; $("tabs").hidden = three; $("bar").hidden = three; $("info").hidden = three;
+  for (let i = 1; i <= 5; i++) $("p-" + i).hidden = three || i !== S.tab;
+  if (!three && !$("msheet").hidden) hideSheet();
+  $("fallback").hidden = true; $("mfallback").hidden = true;
+  if (three) renderMoshiList();
+  try { history.replaceState(null, "", m === 1 ? location.pathname : "?mode=" + m); } catch (e) {}
   // 2枚モードでは「元の画像の文字を残す」は使わない（2枚目の文字はもともと残すため）
   document.querySelectorAll("#chips2 .chip").forEach((c) => { if (KEEP2(c.dataset.text)) c.hidden = m === 2; });
   if (m === 2) { S.s2 = S.s2.filter((t) => !KEEP2(t)); renderWords(); }
@@ -548,6 +675,221 @@ $("mtext").addEventListener("input", (e) => { S.mtext = e.target.value; render()
 $("legend4").textContent = DATA.legend4;
 $("tips").textContent = DATA.tips;
 
+
+// ---------- もしもシリーズ ----------
+const MO = DATA.moshi;
+const MITEMS = MO.cats.flatMap((c) => c.items);
+const M = { logo: false, filter: "all", it: null, look: "写真", like: "しっかり", gor: "ふつう", ai: "なし", ownType: "", ownWord: "", ratio: "", avoid: [], opener: null };
+const AI_SHORT = { "名前と称号": "名前と称号", "題名とひとこと": "題名とひとこと", "ステータス": "能力カード", "セリフと言葉": "セリフとひとこと" };
+const AI_LABEL = { "なし": "入れない", "名前と称号": "名前と称号", "題名とひとこと": "架空の題名とひとこと", "ステータス": "職業と能力のカード", "セリフと言葉": "キャラの有名なセリフと、生き方にちなんだひとこと" };
+function moshiTitle(it) {
+  if (it.theme === "たとえ") return "もしもあなたを" + it.label + "にたとえたら";
+  return "もしもあなたが" + it.label + (it.theme === "になったら" ? "になったら" : "だったら");
+}
+function moshiAiChoices(it) {
+  if (it.guard === "作品") return ["なし", "セリフと言葉"];
+  return it.kind === "おまかせ" ? ["なし", "名前と称号", "題名とひとこと", "ステータス"] : ["なし", "題名とひとこと", "ステータス"];
+}
+// 08の④を使う。1番は仕上がりに合わせて差し替え、4番・5番はもしも用に替える。本人が物・動物にする・人にするのときは1番を出さない
+function moshiAvoidList(it) {
+  const P = MO.parts;
+  return DATA.list4.map((x) => {
+    if (x.n === 1) return ["物", "動物にする", "人にする"].includes(it.self) ? null : { n: 1, mark: x.mark, text: P["④1番（もしも・" + M.look + "）"] };
+    if (x.n === 4) return { n: 4, mark: x.mark, text: P["④4番（もしも・きらめきと統合）"] };
+    if (x.n === 5) return { n: 5, mark: x.mark, text: P["④5番（もしも・差し替え）"] };
+    return x;
+  }).filter(Boolean);
+}
+// 核に、選んだもしもと仕上げの行だけを入れる。中身が空の部品の行は消す
+function moshiPrompt() {
+  const it = M.it, P = MO.parts, look = M.look;
+  const own = M.ownType && M.ownWord.trim() ? "【" + M.ownType + "】「" + M.ownWord.trim() + "」" : "";
+  const logo = it.guard === "作品" && M.logo; // 作品のロゴ・題字を入れる（守り＝作品の選択肢だけ）
+  const hasText = M.ai !== "なし" || !!own || logo;
+  let self;
+  if (it.self === "基本") self = P["本人らしさ（基本・" + look + "）"] + "\n" + P["本人らしさ（人以外の行）"];
+  else self = P["本人らしさ（" + it.self + "）"];
+  if (look === "絵" && it.self !== "基本") self += "\n" + P["絵の描き直し"];
+  if (it.aim === "人以外") self = P["人以外向けの行"] + "\n" + self; // 人だけの写真では断り、人と一緒なら人は元の姿のまま
+  const avoid = moshiAvoidList(it).filter((x) => M.avoid.includes(x.n)).map((x) => x.text);
+  const extra = [];
+  if (logo) extra.push(P["ロゴの行"]);
+  if (M.ai !== "なし") extra.push(P["文字（AI・" + M.ai + "）"]);
+  if (own) extra.push(P["文字あり（もしも・自分の言葉）"].replace("{{組}}", () => own));
+  extra.push(M.ratio && !M.ratio.startsWith("おまかせ") ? P["縦横比あり（もしも）"].replace("{{比率}}", () => M.ratio) : P["縦横比なし（もしも）"]);
+  if (avoid.length) extra.push(P["避けること（もしも）"].replace("{{項目}}", () => avoid.join("／")));
+  extra.push(hasText ? P["除外（もしも・文字あり）"] : P["除外（もしも・文字なし）"]);
+  const map = {
+    "{{会話の扱い}}": it.kind === "会話から" ? P["会話の扱い（会話から）"] : P["会話の扱い（基本）"],
+    "{{テーマ文}}": P["テーマ文（" + it.theme + "）"],
+    "{{作り方}}": P["作り方（" + look + "）"],
+    "{{絵柄の行}}": look === "絵" ? P["絵柄の行"] : "",
+    "{{絵柄}}": P["絵柄（" + (it.art === "－" ? "アニメ" : it.art) + "）"],
+    "{{説明}}": it.text,
+    "{{選び方}}": it.guard === "作品" ? P["選び方（会話から・作品）"] : P["選び方（" + it.kind + "）"],
+    "{{本人らしさ}}": self,
+    "{{似せ方}}": P["似せ方（" + M.like + "）"],
+    "{{足してよいもの}}": hasText ? P["足してよいもの（文字あり）"] : P["足してよいもの（文字なし）"],
+    "{{質感}}": P["質感（" + look + "）"],
+    "{{華やかさ}}": P["華やかさ（" + M.gor + "）"],
+    "{{守り}}": P["守り（" + it.guard + (logo ? "・ロゴあり" : "") + "）"],
+    "{{追加}}": extra.join("\n"),
+    "{{もしも}}": it.label,
+  };
+  let s = MO.core;
+  for (const k in map) if (map[k] === "") s = s.split("\n").filter((l) => l.trim() !== k).join("\n");
+  for (let i = 0; i < 3 && s.indexOf("{{") >= 0; i++) for (const k in map) s = s.split(k).join(map[k]);
+  return s.replace(/\n{3,}/g, "\n\n").trim();
+}
+function moshiBadges(it, look) {
+  let b = badgeFor(it.mark).replace("★人気", "★話題");
+  if (it.kind === "おまかせ") b += '<span class="badge ai">AIが選ぶ</span>';
+  if (it.kind === "会話から") b += '<span class="badge ai">会話から</span>';
+  if (look === "絵") b += '<span class="badge art">絵</span>';
+  if (it.aim === "人以外") b += '<span class="badge aim">人以外向け</span>';
+  return b;
+}
+function moshiVisible(it) {
+  const f = M.filter;
+  if (f === "season") return it.months.includes(new Date().getMonth() + 1);
+  if (f === "pop") return it.mark === "★";
+  if (f === "ai") return it.kind !== "選ぶ";
+  if (f.startsWith("cat")) return MO.cats[+f.slice(3)].items.includes(it);
+  return true;
+}
+// 一覧を作る（系統ごと）
+for (const cat of MO.cats) {
+  const box = document.createElement("div"); box.className = "cat mcat";
+  const h3 = document.createElement("h3"); h3.textContent = cat.name; box.appendChild(h3);
+  const list = document.createElement("div"); list.className = "mlist";
+  for (const it of cat.items) {
+    const b = document.createElement("button");
+    b.className = "mcard"; b.type = "button"; b.dataset.n = it.n;
+    b.innerHTML = '<span class="t">' + esc(it.label) + '</span>' + '<span class="b">' + moshiBadges(it, it.look) + '</span>' + (it.hint ? '<span class="h">' + esc(it.hint) + '</span>' : "");
+    b.addEventListener("click", () => openSheet(it.n, b));
+    list.appendChild(b);
+  }
+  box.appendChild(list); $("mcats").appendChild(box);
+}
+(function moshiFilters() {
+  const month = new Date().getMonth() + 1;
+  const fs = [["all", "すべて"]];
+  if (MITEMS.some((it) => it.months.includes(month))) fs.push(["season", "いまの季節"]);
+  fs.push(["pop", "★話題"], ["ai", "AIが選ぶ"]);
+  MO.cats.forEach((c, i) => fs.push(["cat" + i, c.name]));
+  for (const [v, t] of fs) {
+    const b = document.createElement("button"); b.type = "button"; b.dataset.f = v; b.textContent = t; b.setAttribute("aria-pressed", String(v === "all"));
+    b.addEventListener("click", () => { M.filter = v; renderMoshiList(); });
+    $("mfilter").appendChild(b);
+  }
+})();
+function renderMoshiList() {
+  let total = 0;
+  document.querySelectorAll("#mcats .mcat").forEach((box, ci) => {
+    let shown = 0;
+    box.querySelectorAll(".mcard").forEach((b) => { const ok = moshiVisible(MITEMS.find((x) => x.n === +b.dataset.n)); b.hidden = !ok; if (ok) shown++; });
+    box.hidden = shown === 0; total += shown;
+  });
+  $("mcount").textContent = total + "件";
+  document.querySelectorAll("#mfilter button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.f === M.filter)));
+}
+MO.notesTop.forEach((n) => { const li = document.createElement("li"); li.textContent = n; $("mnotes-top").appendChild(li); });
+MO.notesMore.forEach((n) => { const li = document.createElement("li"); li.textContent = n; $("mnotes-more").appendChild(li); });
+$("mtips").textContent = MO.tips;
+// 下から出る画面
+for (const it of DATA.list3) { const o = document.createElement("option"); o.value = it.text.startsWith("おまかせ") ? "" : it.text; o.textContent = split(it.text)[0]; $("mratio").appendChild(o); }
+(function () {
+  const o = document.createElement("option"); o.value = ""; o.textContent = "入れない"; $("mowntype").appendChild(o);
+  for (const it of DATA.list2) {
+    if (NONE2(it.text) || KEEP2(it.text)) continue;
+    const p = document.createElement("option"); p.value = it.text; p.textContent = split(it.text)[0] + "（" + split(it.text)[1] + "）"; $("mowntype").appendChild(p);
+  }
+})();
+function openSheet(n, opener, fromUrl) {
+  const it = MITEMS.find((x) => x.n === n); if (!it) return;
+  Object.assign(M, { logo: false, it, look: it.look, like: it.like, gor: it.gor, ai: it.ai, ownType: "", ownWord: "", ratio: it.ratio, avoid: [], opener: opener || null });
+  const sel = $("mai"); sel.innerHTML = "";
+  for (const v of moshiAiChoices(it)) { const o = document.createElement("option"); o.value = v; o.textContent = AI_LABEL[v]; sel.appendChild(o); }
+  $("mowntype").value = ""; $("mownword").value = ""; $("mfinish").open = false; $("mfallback").hidden = true;
+  buildAvoidChips(it);
+  renderMoshiList();
+  $("msheet").hidden = false; $("msheet-back").hidden = false; document.body.classList.add("sheet-open");
+  document.querySelector(".wrap").inert = true; $("bar").inert = true;
+  $("msheet").scrollTop = 0;
+  renderSheet();
+  $("mcopy").focus();
+  // 一覧から開いたときは履歴を1つ足し、スマホの「戻る」で画面だけ閉じるようにする（URLから開いたときは足さない）
+  M.pushed = false;
+  try { if (fromUrl) history.replaceState({ msheet: n }, "", "?mode=3&m=" + n); else { history.pushState({ msheet: n }, "", "?mode=3&m=" + n); M.pushed = true; } } catch (e) {}
+}
+function hideSheet() {
+  $("msheet").hidden = true; $("msheet-back").hidden = true; document.body.classList.remove("sheet-open");
+  document.querySelector(".wrap").inert = false; $("bar").inert = false;
+  const back = M.opener || (M.it && document.querySelector('.mcard[data-n="' + M.it.n + '"]'));
+  if (back && !back.hidden) back.focus();
+}
+function closeSheet() {
+  if (M.pushed) { M.pushed = false; history.back(); return; } // 「戻る」と同じ流れで閉じる（popstate で隠す）
+  hideSheet();
+  try { history.replaceState(null, "", "?mode=3"); } catch (e) {}
+}
+window.addEventListener("popstate", () => { if (!$("msheet").hidden) { M.pushed = false; hideSheet(); } });
+function buildAvoidChips(it) {
+  const box = $("mavoid"); box.innerHTML = "";
+  for (const x of moshiAvoidList(it)) {
+    const b = document.createElement("button"); b.className = "chip"; b.type = "button"; b.dataset.n = x.n;
+    b.addEventListener("click", () => {
+      M.avoid = M.avoid.includes(x.n) ? M.avoid.filter((v) => v !== x.n) : M.avoid.concat(x.n);
+      if (M.avoid.includes(3) || M.avoid.includes(4)) M.gor = "ふつう"; // 光や飾りを控えるときは、華やかさも「ふつう」にそろえる
+      renderSheet();
+    });
+    box.appendChild(b);
+  }
+}
+function renderSheet() {
+  const it = M.it;
+  $("msheet-title").textContent = moshiTitle(it);
+  $("msheet-badges").innerHTML = moshiBadges(it, M.look);
+  $("msheet-hint").textContent = it.hint; $("msheet-hint").hidden = !it.hint;
+  const ul = $("msheet-notes"); ul.innerHTML = "";
+  it.notes.forEach((n) => { const li = document.createElement("li"); li.textContent = n; ul.appendChild(li); });
+  for (const [id, v] of [["mlook", M.look], ["mlike", M.like], ["mgor", M.gor]])
+    document.querySelectorAll("#" + id + " button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+  $("mai").value = M.ai; $("mratio").value = M.ratio; $("mowntype").value = M.ownType;
+  $("mownword").hidden = !M.ownType;
+  const alist = moshiAvoidList(it);
+  document.querySelectorAll("#mavoid .chip").forEach((b) => {
+    const x = alist.find((y) => y.n === +b.dataset.n); if (!x) return;
+    const [t, d] = split(x.text);
+    b.innerHTML = '<span class="t">' + esc(t) + badgeFor(x.mark) + '</span>' + (d ? '<span class="d">' + esc(d) + '</span>' : "");
+    b.setAttribute("aria-pressed", String(M.avoid.includes(x.n)));
+  });
+  $("mlook").hidden = $("mlook-lab").hidden = !!it.fixedLook;
+  $("mlogo").hidden = $("mlogo-lab").hidden = it.guard !== "作品";
+  $("mlogo-note").hidden = !(it.guard === "作品" && M.logo);
+  document.querySelectorAll("#mlogo button").forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.v === "あり") === M.logo)));
+  $("mown-note").hidden = !M.ownType;
+  const words = [M.ai !== "なし" ? AI_SHORT[M.ai] : "", M.ownType && M.ownWord.trim() ? "自分の言葉" : ""].filter(Boolean);
+  $("mfinish-sum").textContent = "（いま：" + M.look + "・" + M.like + "・" + M.gor + "・文字＝" + (words.length ? words.join("＋") : "なし") + "・" + (M.ratio ? split(M.ratio)[0] : "縦横比おまかせ") + (M.avoid.length ? "・避ける" + M.avoid.length + "個" : "") + (M.it.guard === "作品" && M.logo ? "・ロゴあり" : "") + "）";
+  $("mprompt").textContent = moshiPrompt();
+}
+for (const [id, key] of [["mlook", "look"], ["mlike", "like"], ["mgor", "gor"]])
+  document.querySelectorAll("#" + id + " button").forEach((b) => b.addEventListener("click", () => {
+    M[key] = b.dataset.v;
+    if (key === "gor" && M.gor === "豪華") M.avoid = M.avoid.filter((v) => v !== 3 && v !== 4); // 豪華にしたら、光や飾りを控える指示は外す
+    renderSheet();
+  }));
+$("mai").addEventListener("change", (e) => { M.ai = e.target.value; renderSheet(); });
+document.querySelectorAll("#mlogo button").forEach((b) => b.addEventListener("click", () => { M.logo = b.dataset.v === "あり"; renderSheet(); }));
+$("mratio").addEventListener("change", (e) => { M.ratio = e.target.value; renderSheet(); });
+$("mowntype").addEventListener("change", (e) => { M.ownType = e.target.value; renderSheet(); if (M.ownType) $("mownword").focus(); });
+$("mownword").addEventListener("input", (e) => { M.ownWord = e.target.value; renderSheet(); });
+$("mcopy").addEventListener("click", () => copyText(moshiPrompt(), "mdone"));
+$("msheet-close").addEventListener("click", closeSheet);
+$("msheet-back").addEventListener("click", closeSheet);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("msheet").hidden) closeSheet(); });
+renderMoshiList();
+
 $("copy-try").addEventListener("click", () => copyText(filledPrompt(), "done-try"));
 $("copy-bar").addEventListener("click", () => copyText(filledPrompt(), "done-bar"));
 $("reset").addEventListener("click", () => {
@@ -557,6 +899,7 @@ $("reset").addEventListener("click", () => {
 });
 // タブ
 function setTab(n, focus) {
+  S.tab = n;
   for (let i = 1; i <= 5; i++) {
     const on = i === n, t = $("tab-" + i);
     t.setAttribute("aria-selected", String(on)); t.tabIndex = on ? 0 : -1;
@@ -581,6 +924,11 @@ document.querySelectorAll("button.next").forEach((b) => b.addEventListener("clic
   const n = parseInt(q.get("s"), 10);
   if (n) { const it = DATA.categories.flatMap((c) => c.items).find((x) => x.n === n); if (it) S.s1 = it.text; }
   if (q.get("mode") === "2") { setMode(2); return; }
+  if (q.get("mode") === "3") {
+    setMode(3);
+    const mn = parseInt(q.get("m"), 10); if (mn) openSheet(mn, null, true);
+    return;
+  }
   render();
   if (n) { const b = document.querySelector('.style-item[aria-pressed="true"]'); if (b) b.scrollIntoView({ block: "center" }); }
 })();

@@ -74,6 +74,7 @@ h2 span, h1 span { background: linear-gradient(transparent 62%, var(--hl) 62%, v
 .btn small { font-weight: 400; font-size: .75rem; opacity: .85; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); }
 .btn.secondary { background: var(--sheet); color: var(--accent); }
+.btn.moshi { grid-column: 1 / -1; background: var(--pop-soft); color: var(--pop); border-color: var(--pop); }
 .btn:focus-visible, .card:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .badges li { font-size: .78rem; padding: 2px 10px; border-radius: 999px; background: var(--sheet); border: 1px solid var(--line); }
@@ -94,6 +95,9 @@ h2 span, h1 span { background: linear-gradient(transparent 62%, var(--hl) 62%, v
 .card b { font-size: .9rem; }
 .card span { font-size: .75rem; color: var(--muted); }
 .more { justify-self: start; }
+.card .pic { position: relative; display: block; aspect-ratio: 1; font-size: 0; }
+.card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card .pic img.before { position: absolute; left: 8px; bottom: 8px; width: 32%; height: auto; aspect-ratio: 1; border-radius: 8px; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0, 0, 0, .35); }
 
 /* 2枚を合わせる */
 .two { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 8px; }
@@ -139,7 +143,7 @@ footer p { margin: 0; }
 <div class="wrap">
   <header class="hero">
     <h1><span>画風コピペシート</span></h1>
-    <p class="catch">写真1枚を、好きな画風に。<small>ChatGPTに貼るプロンプトを、選ぶだけで作れます。</small></p>
+    <p class="catch">写真1枚を、好きな画風に。もしもの姿にも。<small>ChatGPTに貼るプロンプトを、選ぶだけで作れます。</small></p>
     <div class="ba" aria-label="見本：元の写真を水彩画に描き直した例">
       <figure><svg viewBox="0 0 120 90" role="img" aria-label="元の写真の見本"><use href="#sceneP"/></svg><figcaption>元の写真</figcaption></figure>
       <div class="arrow" aria-hidden="true">→</div>
@@ -148,8 +152,9 @@ footer p { margin: 0; }
     <div class="cta">
       <a class="btn primary" href="sheet/">1枚で画風を変える<small>写真を好きな画風に描き直す</small></a>
       <a class="btn secondary" href="sheet/?mode=2">2枚を合わせる<small>人物や動物を、別の写真に入れる</small></a>
+      <a class="btn moshi" href="sheet/?mode=3">もしもシリーズ<small>もしもあなたが〇〇だったら</small></a>
     </div>
-    <ul class="badges"><li>画風の例 50種</li><li>文字・縦横比も選べる</li><li>登録なし</li><li>入力はどこにも送信されません</li></ul>
+    <ul class="badges"><li>画風の例 50種</li><li>もしも __MOSHI_TOTAL__種</li><li>文字・縦横比も選べる</li><li>登録なし</li><li>入力はどこにも送信されません</li></ul>
     <a class="down" href="#how">↓ 使い方と見本を見る</a>
   </header>
 
@@ -192,12 +197,28 @@ footer p { margin: 0; }
     </div>
   </section>
 
+  <section class="sec" id="moshi">
+    <h2><span>もしもシリーズ</span></h2>
+    <p>「もしもあなたが〇〇だったら」を選ぶだけ。写真の人やペット、ぬいぐるみなどが、その姿に生まれ変わった1枚になります。似合うものをAIが選ぶ選択肢もあります。</p>
+    <div class="gallery">
+      <a class="card mcard" href="sheet/?mode=3&amp;m=4" data-moshi="戦国武将"><span class="pic"><img src="images/moshi/samurai.webp" width="480" height="480" alt="戦国武将の作例" loading="lazy"><img class="before" src="images/moshi/samurai-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>戦国武将</b><span>人も犬も、甲冑姿に</span></div></a>
+      <a class="card mcard" href="sheet/?mode=3&amp;m=13" data-moshi="宇宙飛行士"><span class="pic"><img src="images/moshi/astro.webp" width="480" height="480" alt="宇宙飛行士の作例" loading="lazy"><img class="before" src="images/moshi/astro-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>宇宙飛行士</b><span>2人と犬が、そろって宇宙へ</span></div></a>
+      <a class="card mcard" href="sheet/?mode=3&amp;m=28" data-moshi="箱入りのフィギュア"><span class="pic"><img src="images/moshi/figure.webp" width="480" height="480" alt="箱入りのフィギュアの作例" loading="lazy"><img class="before" src="images/moshi/figure-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>箱入りのフィギュア</b><span>持ち物は付属品に</span></div></a>
+      <a class="card mcard" href="sheet/?mode=3&amp;m=25" data-moshi="人間"><span class="pic"><img src="images/moshi/human.webp" width="480" height="480" alt="人間（人以外向け）の作例" loading="lazy"><img class="before" src="images/moshi/human-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>人間（人以外向け）</b><span>三毛猫が、人の姿だったら</span></div></a>
+      <a class="card mcard" href="sheet/?mode=3&amp;m=43" data-moshi="一輪の花"><span class="pic"><img src="images/moshi/flower.webp" width="480" height="480" alt="一輪の花の作例" loading="lazy"><img class="before" src="images/moshi/flower-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>一輪の花</b><span>似合う花と称号を、AIが選ぶ</span></div></a>
+      <a class="card mcard" href="sheet/?mode=3&amp;m=39" data-moshi="アニメの主人公"><span class="pic"><img src="images/moshi/anime.webp" width="480" height="480" alt="アニメの主人公の作例" loading="lazy"><img class="before" src="images/moshi/anime-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>アニメの主人公</b><span>架空の題名も、AIが考える</span></div></a>
+    </div>
+    <p>作例は、AIで作った架空の人物・ペットの写真（左下の小さい写真）を、このページのプロンプトを使ってOpenAIの画像生成で変身させたものです。同じプロンプトでも、出来は毎回変わることがあります。</p>
+    <a class="btn secondary more" href="sheet/?mode=3">もしも全__MOSHI_TOTAL__種を見る</a>
+  </section>
+
   <section class="sec" id="notes">
     <h2><span>使う前に</span></h2>
     <ul class="notes">
       <li>自分で撮った写真や描いた絵、加工・合成が許可されている画像を使ってください。</li>
       <li>人が写っている写真は、写っている本人（子どもは保護者）の了承を取ってから使ってください。</li>
-      <li>合成した写真を、実際にあった出来事のように見せる使い方はしないでください。</li>
+      <li>合成・変身させた写真を、実際にあった出来事のように見せる使い方はしないでください。</li>
+      <li>作品のキャラクターになる「もしも」で作った画像を、自分で見て楽しむ範囲を超えて使うときは、権利者が許可している範囲（ファン作品のガイドラインなど）で使ってください。</li>
       <li>SNSに載せるときは、それぞれのSNSが決めているAI画像のルールに従ってください。</li>
       <li>同じプロンプトでも、出来は毎回変わります。ChatGPTのプランや作れる枚数は変わることがあります。</li>
     </ul>
@@ -208,6 +229,7 @@ footer p { margin: 0; }
     <div class="cta">
       <a class="btn primary" href="sheet/">1枚で画風を変える<small>写真を好きな画風に描き直す</small></a>
       <a class="btn secondary" href="sheet/?mode=2">2枚を合わせる<small>人物や動物を、別の写真に入れる</small></a>
+      <a class="btn moshi" href="sheet/?mode=3">もしもシリーズ<small>もしもあなたが〇〇だったら</small></a>
     </div>
   </section>
 
