@@ -104,7 +104,7 @@ const tm = readMd(moshiPath);
 const mfail = (msg) => { throw new Error(path.basename(moshiPath) + "：" + msg); };
 const mblock = (heading) => blockAt(tm, heading, mfail);
 const mcore = mblock("もしもモードの核").body;
-const MTOK = ["{{会話の扱い}}", "{{テーマ文}}", "{{作り方}}", "{{絵柄の行}}", "{{説明}}", "{{選び方}}", "{{本人らしさ}}", "{{似せ方}}", "{{足してよいもの}}", "{{質感}}", "{{華やかさ}}", "{{守り}}", "{{追加}}"];
+const MTOK = ["{{会話の扱い}}", "{{テーマ文}}", "{{作り方}}", "{{絵柄の行}}", "{{説明}}", "{{選び方}}", "{{本人らしさ}}", "{{似せ方}}", "{{足してよいもの}}", "{{質感}}", "{{華やかさ}}", "{{守り}}", "{{露出}}", "{{カメラ}}", "{{追加}}"];
 for (const tok of MTOK) if (!mcore.includes(tok)) mfail("核に " + tok + " がありません");
 for (const tok of mcore.match(/\{\{[^}]*\}\}/g)) if (!MTOK.includes(tok)) mfail("核に知らないトークン " + tok + " があります");
 
@@ -128,7 +128,7 @@ const mparts = {}; let mlast = null;
   });
 }
 // 部品の中で使ってよいトークン（ほかの {{ }} は打ち間違いとして止める）
-const PART_TOK = { "絵柄の行": ["{{絵柄}}"], "文字あり（もしも・自分の言葉）": ["{{組}}"], "縦横比あり（もしも）": ["{{比率}}"], "避けること（もしも）": ["{{項目}}"] };
+const PART_TOK = { "カメラの行": ["{{カメラワーク}}"], "絵柄の行": ["{{絵柄}}"], "文字あり（もしも・自分の言葉）": ["{{組}}"], "縦横比あり（もしも）": ["{{比率}}"], "避けること（もしも）": ["{{項目}}"] };
 for (const [k, v] of Object.entries(mparts)) {
   const allowed = k.startsWith("テーマ文（") ? ["{{もしも}}"] : PART_TOK[k] || [];
   for (const tok of v.match(/\{\{[^}]*\}\}/g) || []) if (!allowed.includes(tok)) mfail("部品「" + k + "」に使えないトークン " + tok + " があります（打ち間違いかもしれません）");
@@ -136,9 +136,25 @@ for (const [k, v] of Object.entries(mparts)) {
 }
 
 // 選択肢：「番号. 印言葉｜型｜仕上がり｜向き｜本人｜テーマ｜AIが考える文字｜華やかさ｜似せ方｜縦横比｜季節の月｜絵柄｜守り：説明」
-const COLS = ["言葉", "型", "仕上がり", "向き", "本人", "テーマ", "AIが考える文字", "華やかさ", "似せ方", "縦横比", "季節の月", "絵柄", "守り"];
+const COLS = ["言葉", "型", "仕上がり", "向き", "本人", "テーマ", "AIが考える文字", "華やかさ", "似せ方", "縦横比", "季節の月", "絵柄", "守り", "カメラ"];
+// カメラワークの一覧（「名前｜一言：文」。おまかせだけは文が空でよい）
+const mcams = [];
+{
+  const cb = mblock("もしものカメラワーク");
+  cb.body.split("\n").forEach((line, i) => {
+    if (!line.trim()) return;
+    const m = line.match(/^([^｜：]+)｜([^：]*)：(.*)$/);
+    if (!m) mfail((cb.line + i) + "行目：カメラワークの行が読めません（「名前｜一言：文」の形にしてください）：" + line.slice(0, 30));
+    const label = m[1].trim(), text = m[3].trim();
+    if (mcams.some((c) => c.label === label)) mfail((cb.line + i) + "行目：カメラワークの名前が重なっています：" + label);
+    if (!text && label !== "おまかせ") mfail((cb.line + i) + "行目：カメラワーク「" + label + "」の文が空です（空でよいのはおまかせだけ）");
+    if (/\{\{|}}/.test(text)) mfail((cb.line + i) + "行目：カメラワークの文にトークンが入っています");
+    mcams.push({ label, hint: m[2].trim(), text });
+  });
+  if (!mcams.length || mcams[0].label !== "おまかせ") mfail("カメラワークの一覧の先頭は「おまかせ」にしてください");
+}
 const ENUM = { "型": ["選ぶ", "おまかせ", "会話から"], "仕上がり": ["写真", "絵"], "向き": ["なんでも", "人以外"],
-  "本人": ["基本", "年齢", "物", "動物にする", "人にする", "似顔絵"], "テーマ": ["だったら", "になったら", "たとえ"],
+  "本人": ["基本", "年齢", "物", "動物にする", "人にする", "似顔絵", "キャラ"], "テーマ": ["だったら", "になったら", "たとえ"],
   "AIが考える文字": ["なし", "名前と称号", "題名とひとこと", "ステータス", "セリフと言葉"], "華やかさ": ["ふつう", "豪華"], "似せ方": ["しっかり", "のびのび"],
   "絵柄": ["－", "アニメ", "絵本", "似顔絵"], "守り": ["基本", "作品"] };
 const mcats = []; let mc = null, mit = null;
@@ -159,7 +175,7 @@ const mcats = []; let mc = null, mit = null;
     if (!m) mfail(at + "読めない行です。「番号. 印言葉｜…｜守り：説明」の形にしてください（番号のあとは「. 」、説明の前は全角の「：」）：" + line.slice(0, 30));
     if (!mc) mfail(at + "最初の「■系統名」より前に選択肢があります");
     const f = m[3].split("｜").map((s) => s.trim());
-    if (f.length !== 13) mfail(at + "項目の数が" + f.length + "です（13のはず）。区切りは全角の「｜」です。言葉や項目の中に「：」があると、そこで説明と見なされるので使わないでください");
+    if (f.length !== COLS.length) mfail(at + "項目の数が" + f.length + "です（" + COLS.length + "のはず）。区切りは全角の「｜」です。言葉や項目の中に「：」があると、そこで説明と見なされるので使わないでください");
     const v = Object.fromEntries(COLS.map((c, j) => [c, f[j]]));
     if (!v["言葉"] || /^[☆★◆◇●○・]/.test(v["言葉"])) mfail(at + "言葉がないか、言葉の先頭に記号があります。印は★か◆だけで、「番号. 」の直後にスペースなしで付けます：" + v["言葉"]);
     for (const [c, list] of Object.entries(ENUM)) if (!list.includes(v[c])) mfail(at + v["言葉"] + " の「" + c + "」が「" + v[c] + "」になっています。使えるのは " + list.join("・") + " です");
@@ -184,29 +200,39 @@ const mcats = []; let mc = null, mit = null;
     pair(v["守り"] !== "作品" || ["なし", "セリフと言葉"].includes(v["AIが考える文字"]), "守りが作品の選択肢の文字は、なし か セリフと言葉 にしてください");
     pair(v["本人"] !== "人にする" || v["向き"] === "人以外", "本人が人にするの選択肢は、向きを人以外にしてください");
     pair(!["絵本", "似顔絵"].includes(v["絵柄"]) || v["仕上がり"] === "絵", "絵柄が絵本・似顔絵の選択肢は、仕上がりを絵にしてください（写真には切り替えられません）");
+    pair(v["カメラ"] === "固定" || mcams.some((c) => c.label === v["カメラ"]), "「カメラ」は 固定 か、カメラワークの一覧の名前（" + mcams.map((c) => c.label).join("・") + "）にしてください：" + v["カメラ"]);
+    pair(v["カメラ"] === "固定" || v["カメラ"] === "おまかせ" || v["似せ方"] === "のびのび", "カメラワークを最初から選ぶ選択肢は、似せ方を のびのび にしてください");
     if (/\{\{|}}|（本人らしさ|（既定|（おすすめ/.test(m[4])) mfail(at + v["言葉"] + " の説明に、トークンか運用メモが混ざっています");
     mit = { n: +m[1], mark: m[2], label: v["言葉"], kind: v["型"], look: v["仕上がり"], aim: v["向き"], self: v["本人"], theme: v["テーマ"], ai: v["AIが考える文字"],
       gor: v["華やかさ"], like: v["似せ方"], art: v["絵柄"], guard: v["守り"], ratio, months, text: m[4].trim(), hint: "", notes: [],
-      fixedLook: ["絵本", "似顔絵"].includes(v["絵柄"]) };
+      fixedLook: ["絵本", "似顔絵"].includes(v["絵柄"]), camera: v["カメラ"] };
     mc.items.push(mit);
   });
   if (mc && !mc.items.length) mfail("最後の系統「" + mc.name + "」に選択肢が1つもありません");
 }
 const mitems = mcats.flatMap((c) => c.items);
+// 守りが作品の選択肢（42）の核：住さんが縮めた文面。守りの行・除外の行は入らない
+const MTOK_WORK = ["{{テーマ文}}", "{{作り方}}", "{{絵柄の行}}", "{{説明}}", "{{選び方}}", "{{本人らしさ}}", "{{似せ方}}", "{{足してよいもの}}", "{{質感}}", "{{華やかさ}}", "{{露出}}", "{{カメラ}}", "{{追加}}"];
+let mcoreWork = "";
+if (mitems.some((it) => it.guard === "作品")) {
+  mcoreWork = mblock("作品キャラの核").body;
+  for (const tok of MTOK_WORK) if (!mcoreWork.includes(tok)) mfail("作品キャラの核に " + tok + " がありません");
+  for (const tok of mcoreWork.match(/\{\{[^}]*\}\}/g)) if (!MTOK_WORK.includes(tok)) mfail("作品キャラの核に使えないトークン " + tok + " があります");
+}
 mitems.forEach((it, i) => { if (it.n !== i + 1) mfail("番号が連番ではありません：" + it.label + " は " + it.n + " ですが、" + (i + 1) + " のはずです（系統をまたいで1から続けて振ります）"); });
 
 // 画面が使う部品が全部あるか。空でよい部品以外が空ならエラー。どこからも使われない部品もエラー
 const MAY_EMPTY = new Set(["選び方（選ぶ）", "足してよいもの（文字なし）", "華やかさ（ふつう）"]);
-const mneed = new Set(["会話の扱い（基本）", "作り方（写真）", "作り方（絵）", "絵柄の行", "絵柄（アニメ）", "本人らしさ（基本・写真）", "本人らしさ（基本・絵）", "本人らしさ（人以外の行）", "絵の描き直し",
+const mneed = new Set(["カメラの行", "会話の扱い（基本）", "作り方（写真）", "作り方（絵）", "絵柄の行", "絵柄（アニメ）", "本人らしさ（基本・写真）", "本人らしさ（基本・絵）", "本人らしさ（人以外の行）", "絵の描き直し",
   "似せ方（しっかり）", "似せ方（のびのび）", "足してよいもの（文字なし）", "足してよいもの（文字あり）", "質感（写真）", "質感（絵）", "華やかさ（ふつう）", "華やかさ（豪華）",
   "文字（AI・題名とひとこと）", "文字（AI・ステータス）", "文字あり（もしも・自分の言葉）", "縦横比あり（もしも）", "縦横比なし（もしも）", "避けること（もしも）",
   "④1番（もしも・写真）", "④1番（もしも・絵）", "④4番（もしも・きらめきと統合）", "④5番（もしも・差し替え）", "除外（もしも・文字なし）", "除外（もしも・文字あり）"]);
 for (const it of mitems) {
-  mneed.add("テーマ文（" + it.theme + "）"); mneed.add("守り（" + it.guard + "）");
+  mneed.add("テーマ文（" + it.theme + "）"); if (it.guard !== "作品") mneed.add("守り（" + it.guard + "）");
   mneed.add(it.guard === "作品" ? "選び方（会話から・作品）" : "選び方（" + it.kind + "）");
   if (it.kind === "会話から") mneed.add("会話の扱い（会話から）");
   if (it.kind === "おまかせ") mneed.add("文字（AI・名前と称号）");
-  if (it.guard === "作品") { mneed.add("文字（AI・セリフと言葉）"); mneed.add("守り（作品・ロゴあり）"); mneed.add("ロゴの行"); }
+  if (it.guard === "作品") { mneed.add("文字（AI・セリフと言葉）"); mneed.add("ロゴの行"); mneed.add("露出（おさえる）"); mneed.add("露出（キャラどおり）"); }
   if (it.self !== "基本") mneed.add("本人らしさ（" + it.self + "）");
   if (it.aim === "人以外") mneed.add("人以外向けの行");
   if (it.art !== "－") mneed.add("絵柄（" + it.art + "）");
@@ -233,7 +259,7 @@ const mnotes = (() => {
   for (const n of out) if (/^[\[［]\s*最初\s*[\]］]/.test(n) && !n.startsWith("[最初] ")) mfail("注意書きの [最初] の書き方が違います（半角の [最初] と半角スペース）：" + n.slice(0, 20));
   return out;
 })();
-const moshi = { core: mcore, parts: mparts, cats: mcats, total: mitems.length, tips: mblock("もしもの直し方のコツ").body,
+const moshi = { core: mcore, coreWork: mcoreWork, parts: mparts, cats: mcats, cams: mcams, total: mitems.length, tips: mblock("もしもの直し方のコツ").body,
   notesTop: mnotes.filter((x) => x.startsWith("[最初] ")).map((x) => x.slice(5)), notesMore: mnotes.filter((x) => !x.startsWith("[最初] ")) };
 if (moshi.notesTop.length !== 3) mfail("注意書きの [最初] は3行のはずですが、" + moshi.notesTop.length + "行です");
 if (moshi.notesMore.length < 3) mfail("注意書き（くわしい注意）が少なすぎます");

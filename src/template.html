@@ -396,6 +396,9 @@ body.sheet-open { overflow: hidden; }
         <div class="seg" role="group" aria-label="似せ方" id="mlike">
           <button type="button" data-v="しっかり">しっかり（ポーズも写真に近く）</button><button type="button" data-v="のびのび">のびのび（ポーズは新しく）</button>
         </div>
+        <label class="lab" for="mcam" id="mcam-lab">カメラワーク</label>
+        <select id="mcam"></select>
+        <p class="note" id="mcam-note"></p>
         <span class="lab">華やかさ</span>
         <div class="seg" role="group" aria-label="華やかさ" id="mgor">
           <button type="button" data-v="ふつう">ふつう</button><button type="button" data-v="豪華">豪華</button>
@@ -405,6 +408,11 @@ body.sheet-open { overflow: hidden; }
           <button type="button" data-v="なし">入れない</button><button type="button" data-v="あり">入れる</button>
         </div>
         <p class="note warn" id="mlogo-note" hidden>作品のロゴは商標で、権利がある場合があります。自分で見て楽しむ範囲を超えて使うときは、権利者が許可している範囲で使ってください。ChatGPTで作れないことや、形が正確に出ないこともあります。</p>
+        <span class="lab" id="msafe-lab" hidden>露出をおさえる（セーフティ）</span>
+        <div class="seg" role="group" aria-label="露出をおさえる（セーフティ）" id="msafe" hidden>
+          <button type="button" data-v="on">ON</button><button type="button" data-v="off">OFF（キャラのとおり）</button>
+        </div>
+        <p class="note" id="msafe-note" hidden></p>
         <label class="lab" for="mai">AIが考えて入れる文字</label>
         <select id="mai"></select>
         <label class="lab" for="mowntype">自分の言葉も入れる（1つまで）</label>
@@ -679,7 +687,7 @@ $("tips").textContent = DATA.tips;
 // ---------- もしもシリーズ ----------
 const MO = DATA.moshi;
 const MITEMS = MO.cats.flatMap((c) => c.items);
-const M = { logo: false, filter: "all", it: null, look: "写真", like: "しっかり", gor: "ふつう", ai: "なし", ownType: "", ownWord: "", ratio: "", avoid: [], opener: null };
+const M = { cam: "おまかせ", logo: false, safe: true, filter: "all", it: null, look: "写真", like: "しっかり", gor: "ふつう", ai: "なし", ownType: "", ownWord: "", ratio: "", avoid: [], opener: null };
 const AI_SHORT = { "名前と称号": "名前と称号", "題名とひとこと": "題名とひとこと", "ステータス": "能力カード", "セリフと言葉": "セリフとひとこと" };
 const AI_LABEL = { "なし": "入れない", "名前と称号": "名前と称号", "題名とひとこと": "架空の題名とひとこと", "ステータス": "職業と能力のカード", "セリフと言葉": "キャラの有名なセリフと、生き方にちなんだひとこと" };
 function moshiTitle(it) {
@@ -704,8 +712,11 @@ function moshiAvoidList(it) {
 function moshiPrompt() {
   const it = M.it, P = MO.parts, look = M.look;
   const own = M.ownType && M.ownWord.trim() ? "【" + M.ownType + "】「" + M.ownWord.trim() + "」" : "";
-  const logo = it.guard === "作品" && M.logo; // 作品のロゴ・題字を入れる（守り＝作品の選択肢だけ）
+  const logo = it.guard === "作品" && M.logo;
+  const cam = it.camera !== "固定" && M.cam !== "おまかせ" ? MO.cams.find((c) => c.label === M.cam) : null; // おまかせ・固定は何も足さない
+  const camText = cam ? cam.text : ""; // 作品のロゴ・題字を入れる（守り＝作品の選択肢だけ）
   const hasText = M.ai !== "なし" || !!own || logo;
+  const work = it.guard === "作品"; // 作品のキャラ（42）は専用の核（住さんが縮めた文面）。守り・除外の行は入れず、縦横比は選んだときだけ
   let self;
   if (it.self === "基本") self = P["本人らしさ（基本・" + look + "）"] + "\n" + P["本人らしさ（人以外の行）"];
   else self = P["本人らしさ（" + it.self + "）"];
@@ -716,9 +727,10 @@ function moshiPrompt() {
   if (logo) extra.push(P["ロゴの行"]);
   if (M.ai !== "なし") extra.push(P["文字（AI・" + M.ai + "）"]);
   if (own) extra.push(P["文字あり（もしも・自分の言葉）"].replace("{{組}}", () => own));
-  extra.push(M.ratio && !M.ratio.startsWith("おまかせ") ? P["縦横比あり（もしも）"].replace("{{比率}}", () => M.ratio) : P["縦横比なし（もしも）"]);
+  if (M.ratio && !M.ratio.startsWith("おまかせ")) extra.push(P["縦横比あり（もしも）"].replace("{{比率}}", () => M.ratio));
+  else if (!work) extra.push(P["縦横比なし（もしも）"]);
   if (avoid.length) extra.push(P["避けること（もしも）"].replace("{{項目}}", () => avoid.join("／")));
-  extra.push(hasText ? P["除外（もしも・文字あり）"] : P["除外（もしも・文字なし）"]);
+  if (!work) extra.push(hasText ? P["除外（もしも・文字あり）"] : P["除外（もしも・文字なし）"]);
   const map = {
     "{{会話の扱い}}": it.kind === "会話から" ? P["会話の扱い（会話から）"] : P["会話の扱い（基本）"],
     "{{テーマ文}}": P["テーマ文（" + it.theme + "）"],
@@ -732,11 +744,13 @@ function moshiPrompt() {
     "{{足してよいもの}}": hasText ? P["足してよいもの（文字あり）"] : P["足してよいもの（文字なし）"],
     "{{質感}}": P["質感（" + look + "）"],
     "{{華やかさ}}": P["華やかさ（" + M.gor + "）"],
-    "{{守り}}": P["守り（" + it.guard + (logo ? "・ロゴあり" : "") + "）"],
+    "{{守り}}": work ? "" : P["守り（" + it.guard + "）"],
+    "{{カメラ}}": camText ? P["カメラの行"].replace("{{カメラワーク}}", () => camText) : "",
+    "{{露出}}": it.guard === "作品" ? P["露出（" + (M.safe ? "おさえる" : "キャラどおり") + "）"] : "",
     "{{追加}}": extra.join("\n"),
     "{{もしも}}": it.label,
   };
-  let s = MO.core;
+  let s = work ? MO.coreWork : MO.core;
   for (const k in map) if (map[k] === "") s = s.split("\n").filter((l) => l.trim() !== k).join("\n");
   for (let i = 0; i < 3 && s.indexOf("{{") >= 0; i++) for (const k in map) s = s.split(k).join(map[k]);
   return s.replace(/\n{3,}/g, "\n\n").trim();
@@ -807,7 +821,7 @@ for (const it of DATA.list3) { const o = document.createElement("option"); o.val
 })();
 function openSheet(n, opener, fromUrl) {
   const it = MITEMS.find((x) => x.n === n); if (!it) return;
-  Object.assign(M, { logo: false, it, look: it.look, like: it.like, gor: it.gor, ai: it.ai, ownType: "", ownWord: "", ratio: it.ratio, avoid: [], opener: opener || null });
+  Object.assign(M, { cam: it.camera === "固定" ? "おまかせ" : it.camera, logo: false, safe: true, it, look: it.look, like: it.like, gor: it.gor, ai: it.ai, ownType: "", ownWord: "", ratio: it.ratio, avoid: [], opener: opener || null });
   const sel = $("mai"); sel.innerHTML = "";
   for (const v of moshiAiChoices(it)) { const o = document.createElement("option"); o.value = v; o.textContent = AI_LABEL[v]; sel.appendChild(o); }
   $("mowntype").value = ""; $("mownword").value = ""; $("mfinish").open = false; $("mfallback").hidden = true;
@@ -865,22 +879,36 @@ function renderSheet() {
     b.setAttribute("aria-pressed", String(M.avoid.includes(x.n)));
   });
   $("mlook").hidden = $("mlook-lab").hidden = !!it.fixedLook;
+  $("mcam").hidden = $("mcam-lab").hidden = it.camera === "固定";
+  $("mcam").value = M.cam;
+  const camNow = MO.cams.find((c) => c.label === M.cam);
+  $("mcam-note").textContent = it.camera === "固定" ? "" : (camNow ? camNow.hint : "") + (M.cam !== "おまかせ" ? "（カメラワークを選ぶと、似せ方は「のびのび」になります）" : "");
+  $("mcam-note").hidden = it.camera === "固定";
   $("mlogo").hidden = $("mlogo-lab").hidden = it.guard !== "作品";
+  $("msafe").hidden = $("msafe-lab").hidden = $("msafe-note").hidden = it.guard !== "作品";
+  $("msafe-note").textContent = M.safe
+    ? "胸元やお腹が開く服は中にTシャツ、短いスカートやパンツにはスパッツを合わせ、のぞくアングルや体の傷は描きません。"
+    : "胸元が開いた服や体の傷も、キャラクターのとおりに描きます。スカートの中が見えるアングル、水着や下着のような見せ方にはなりません。子どもの写真では、OFFでも胸元を隠します。";
+  document.querySelectorAll("#msafe button").forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.v === "on") === M.safe)));
   $("mlogo-note").hidden = !(it.guard === "作品" && M.logo);
   document.querySelectorAll("#mlogo button").forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.v === "あり") === M.logo)));
   $("mown-note").hidden = !M.ownType;
   const words = [M.ai !== "なし" ? AI_SHORT[M.ai] : "", M.ownType && M.ownWord.trim() ? "自分の言葉" : ""].filter(Boolean);
-  $("mfinish-sum").textContent = "（いま：" + M.look + "・" + M.like + "・" + M.gor + "・文字＝" + (words.length ? words.join("＋") : "なし") + "・" + (M.ratio ? split(M.ratio)[0] : "縦横比おまかせ") + (M.avoid.length ? "・避ける" + M.avoid.length + "個" : "") + (M.it.guard === "作品" && M.logo ? "・ロゴあり" : "") + "）";
+  $("mfinish-sum").textContent = "（いま：" + M.look + "・" + M.like + "・" + M.gor + "・文字＝" + (words.length ? words.join("＋") : "なし") + "・" + (M.ratio ? split(M.ratio)[0] : "縦横比おまかせ") + (M.avoid.length ? "・避ける" + M.avoid.length + "個" : "") + (M.it.camera !== "固定" && M.cam !== "おまかせ" ? "・" + M.cam : "") + (M.it.guard === "作品" && M.logo ? "・ロゴあり" : "") + (M.it.guard === "作品" && !M.safe ? "・セーフティOFF" : "") + "）";
   $("mprompt").textContent = moshiPrompt();
 }
 for (const [id, key] of [["mlook", "look"], ["mlike", "like"], ["mgor", "gor"]])
   document.querySelectorAll("#" + id + " button").forEach((b) => b.addEventListener("click", () => {
     M[key] = b.dataset.v;
+    if (key === "like" && M.like === "しっかり") M.cam = "おまかせ"; // 写真の角度とポーズに近づけるときは、カメラワークはおまかせに戻す
     if (key === "gor" && M.gor === "豪華") M.avoid = M.avoid.filter((v) => v !== 3 && v !== 4); // 豪華にしたら、光や飾りを控える指示は外す
     renderSheet();
   }));
 $("mai").addEventListener("change", (e) => { M.ai = e.target.value; renderSheet(); });
+for (const c of MO.cams) { const o = document.createElement("option"); o.value = c.label; o.textContent = c.label; $("mcam").appendChild(o); }
+$("mcam").addEventListener("change", (e) => { M.cam = e.target.value; if (M.cam !== "おまかせ") M.like = "のびのび"; renderSheet(); }); // 「しっかり」はカメラの角度も写真のままなので、選んだカメラワークとぶつかる
 document.querySelectorAll("#mlogo button").forEach((b) => b.addEventListener("click", () => { M.logo = b.dataset.v === "あり"; renderSheet(); }));
+document.querySelectorAll("#msafe button").forEach((b) => b.addEventListener("click", () => { M.safe = b.dataset.v === "on"; renderSheet(); }));
 $("mratio").addEventListener("change", (e) => { M.ratio = e.target.value; renderSheet(); });
 $("mowntype").addEventListener("change", (e) => { M.ownType = e.target.value; renderSheet(); if (M.ownType) $("mownword").focus(); });
 $("mownword").addEventListener("input", (e) => { M.ownWord = e.target.value; renderSheet(); });
