@@ -32,6 +32,7 @@
   --orig: #2d6b4f;
   --orig-soft: #e1f2e9;
   --ok: #1f7a4d;
+  --lock-bg: #e9e6df; --lock-chip: #d6d2c9; --lock-chip-ink: #565c68;
   --warn: #9a5b00;
   --blot-1: rgba(244, 150, 160, .38);
   --blot-2: rgba(120, 180, 235, .38);
@@ -51,6 +52,7 @@
     --paper: #15181f; --sheet: rgba(30, 34, 46, .88); --ink: #e8eaf0; --muted: #a6aebd; --line: #343c4e;
     --accent: #9fb5ee; --accent-ink: #121726; --accent-soft: #24304e; --ok: #6fd3a0; --warn: #f0b860;
     --pop: #f2a07c; --pop-soft: #3a2219; --orig: #7fd1a8; --orig-soft: #173328;
+    --lock-bg: #2a2f3c; --lock-chip: #3a4152; --lock-chip-ink: #c3c9d6;
     --blot-1: rgba(240, 140, 155, .16); --blot-2: rgba(110, 170, 235, .18); --blot-3: rgba(130, 200, 150, .14); --blot-4: rgba(245, 195, 100, .14);
     --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     --hl: rgba(110, 170, 235, .32); --bar-bg: rgba(21, 24, 31, .92); --card-shadow: 0 10px 28px -18px rgba(0, 0, 0, .7);
@@ -61,6 +63,7 @@
     --paper: #15181f; --sheet: rgba(30, 34, 46, .88); --ink: #e8eaf0; --muted: #a6aebd; --line: #343c4e;
     --accent: #9fb5ee; --accent-ink: #121726; --accent-soft: #24304e; --ok: #6fd3a0; --warn: #f0b860;
     --pop: #f2a07c; --pop-soft: #3a2219; --orig: #7fd1a8; --orig-soft: #173328;
+    --lock-bg: #2a2f3c; --lock-chip: #3a4152; --lock-chip-ink: #c3c9d6;
     --blot-1: rgba(240, 140, 155, .16); --blot-2: rgba(110, 170, 235, .18); --blot-3: rgba(130, 200, 150, .14); --blot-4: rgba(245, 195, 100, .14);
     --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     --hl: rgba(110, 170, 235, .32); --bar-bg: rgba(21, 24, 31, .92); --card-shadow: 0 10px 28px -18px rgba(0, 0, 0, .7);
@@ -170,9 +173,12 @@ footer .credit { margin-top: 8px; text-align: center; letter-spacing: 0.04em; }
 .mcard .badge, .mbadges .badge { margin-left: 0; }
 .badge.ai { background: var(--accent-soft); color: var(--accent); }
 .badge.aim { background: var(--orig-soft); color: var(--orig); }
-.badge.lock { background: var(--paper); color: var(--muted); border: 1px solid var(--line); }
-.mcard.locked { background: transparent; border-style: dashed; }
-.mcard.locked .t { color: var(--muted); }
+.badge.open { background: var(--orig-soft); color: var(--ok); }
+.haslock .mcard:not(.locked) { background: var(--sheet); border: 2px solid var(--accent); padding: 9px 11px; box-shadow: 0 8px 16px -10px rgba(58, 90, 166, .65); }
+.haslock .mcard:not(.locked) .t { color: var(--accent); }
+.mcard.locked { background: var(--lock-bg); border-color: var(--lock-bg); cursor: default; }
+.mcard.locked .t { color: var(--muted); font-weight: 500; }
+.mcard.locked .badge { background: var(--lock-chip); color: var(--lock-chip-ink); border: 0; }
 .locknote { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 30; width: max-content; max-width: calc(100% - 32px); margin: 0; padding: 10px 14px; border-radius: 12px; background: var(--paper); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--card-shadow); font-size: 0.85rem; line-height: 1.5; pointer-events: none; }
 .legend .count { font-variant-numeric: tabular-nums; }
 .msheet-back { position: fixed; inset: 0; background: rgba(20, 24, 34, .45); z-index: 20; }
@@ -248,7 +254,7 @@ body.sheet-open { overflow: hidden; }
     <h2><span class="step">もしも</span>もしもあなたが〇〇だったら</h2>
     <p class="note">選ぶと、そのもしものプロンプトが出ます。写真の人やペット、ぬいぐるみ・置物・自分で描いたキャラの絵などが、その姿に生まれ変わった1枚になります。どの写真でも選べます（「人以外向け」の印があるものは、人だけの写真では作れません）。</p>
     <div class="fchips" role="group" aria-label="しぼりこみ" id="mfilter"></div>
-    <p class="legend">★話題になったもの　◆このサイトで考えた案<span id="mlock-legend" hidden>　鍵つき＝いまは使えません（合言葉で開けられるように準備中）</span>　<span class="count" id="mcount"></span></p>
+    <p class="legend">★話題になったもの　◆このサイトで考えた案<span id="mlock-legend" hidden>　灰色＝現在非公開（いまは使えません。合言葉で開けられるように準備中）</span>　<span class="count" id="mcount"></span></p>
     <div class="cats" id="mcats"></div>
     <ul class="points" id="mnotes-top"></ul>
     <details>
@@ -776,7 +782,9 @@ function moshiVisible(it) {
   if (f.startsWith("cat")) return MO.cats[+f.slice(3)].items.includes(it);
   return true;
 }
-// 一覧を作る（系統ごと）
+// 一覧を作る（系統ごと）。使えない物（現在非公開）があるときは、使える物に「使える」の印と青い枠を付けて見分ける
+const MLOCKED = MITEMS.some((it) => it.locked);
+if (MLOCKED) $("mcats").classList.add("haslock");
 for (const cat of MO.cats) {
   const box = document.createElement("div"); box.className = "cat mcat";
   const h3 = document.createElement("h3"); h3.textContent = cat.name; box.appendChild(h3);
@@ -784,7 +792,7 @@ for (const cat of MO.cats) {
   for (const it of cat.items) {
     const b = document.createElement("button");
     b.className = "mcard" + (it.locked ? " locked" : ""); b.type = "button"; b.dataset.n = it.n; if (it.locked) b.setAttribute("aria-disabled", "true");
-    b.innerHTML = '<span class="t">' + esc(it.label) + '</span>' + '<span class="b">' + moshiBadges(it, it.look) + (it.locked ? '<span class="badge lock">鍵つき</span>' : "") + '</span>' + (it.hint ? '<span class="h">' + esc(it.hint) + '</span>' : "");
+    b.innerHTML = '<span class="t">' + esc(it.label) + '</span>' + '<span class="b">' + (MLOCKED && !it.locked ? '<span class="badge open">使える</span>' : "") + moshiBadges(it, it.look) + (it.locked ? '<span class="badge lock">現在非公開</span>' : "") + '</span>' + (it.hint ? '<span class="h">' + esc(it.hint) + '</span>' : "");
     b.addEventListener("click", () => openSheet(it.n, b));
     list.appendChild(b);
   }
@@ -811,7 +819,7 @@ function renderMoshiList() {
     box.querySelectorAll(".mcard").forEach((b) => { const ok = moshiVisible(MITEMS.find((x) => x.n === +b.dataset.n)); b.hidden = !ok; if (ok) { shown++; if (b.classList.contains("locked")) lockedN++; } });
     box.hidden = shown === 0; total += shown;
   });
-  $("mcount").textContent = total + "件" + (lockedN ? "（うち鍵つき " + lockedN + "件）" : "");
+  $("mcount").textContent = total + "件" + (lockedN ? "（うち現在非公開 " + lockedN + "件）" : "");
   document.querySelectorAll("#mfilter button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.f === M.filter)));
 }
 MO.notesTop.forEach((n) => { const li = document.createElement("li"); li.textContent = n; $("mnotes-top").appendChild(li); });
@@ -828,7 +836,7 @@ for (const it of DATA.list3) { const o = document.createElement("option"); o.val
 })();
 // 鍵つきの選択肢を押したときの案内（数秒で消える）
 function showLockNote(it) {
-  const p = $("mlock-note"); p.textContent = "「" + it.label + "」は鍵つきです。合言葉で開けられるように、準備をしています。"; p.hidden = false;
+  const p = $("mlock-note"); p.textContent = "「" + it.label + "」は現在非公開です。合言葉で開けられるように、準備をしています。"; p.hidden = false;
   clearTimeout(p._t); p._t = setTimeout(() => { p.hidden = true; }, 5000);
 }
 function openSheet(n, opener, fromUrl) {

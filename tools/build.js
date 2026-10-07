@@ -350,11 +350,11 @@ for (const mm of topSrc.matchAll(/href="sheet\/\?mode=3&amp;m=(\d+)[^"]*"([^>]*)
   if (!lab) throw new Error("src/top.html の作例リンク m=" + mm[1] + " に data-moshi（選択肢の言葉）がありません");
   if (!it || it.label !== lab) throw new Error("src/top.html の作例リンク m=" + mm[1] + " は「" + lab + "」のはずですが、選択肢" + mm[1] + "は「" + (it ? it.label : "ありません") + "」です。番号を直してください");
 }
-// 鍵つきの選択肢の作例には印を付ける（トップで「鍵つき」と出す）
+// 鍵つきの選択肢の作例には印を付ける（トップで「現在非公開」と出す）
 const topMarked = topSrc.replace(/<a class="card mcard" (href="sheet\/\?mode=3&amp;m=\d+[^"]*" data-moshi="([^"]+)")/g, (all, rest, lab) => { const it = mitems.find((x) => x.label === lab); return it && !isOpen(it) ? '<a class="card mcard locked" ' + rest : all; });
 const lockedSamples = [...topSrc.matchAll(/data-moshi="([^"]+)"/g)].filter((mm) => { const it = mitems.find((x) => x.label === mm[1]); return it && !isOpen(it); }).length;
 if ((topMarked.match(/<a class="card mcard locked" /g) || []).length !== lockedSamples) throw new Error("src/top.html の作例のうち、鍵つきの選択肢に「鍵つき」の印を付けられない物があります（<a class=\"card mcard\" href=… data-moshi=…> の書き方を、ほかの作例とそろえてください）");
-const moshiCount = moshi.open < moshi.total ? moshi.open + "種（鍵つき" + (moshi.total - moshi.open) + "種）" : moshi.total + "種";
+const moshiCount = moshi.open < moshi.total ? moshi.open + "種（現在非公開" + (moshi.total - moshi.open) + "種）" : moshi.total + "種";
 const top = topMarked.split("もしも __MOSHI_TOTAL__種").join("もしも " + moshiCount).split("__SITE_URL__").join(SITE_URL).split("画風の例 50種").join("画風の例 " + total + "種").split("ほか全50種").join("ほか全" + total + "種");
 const left = top.match(/__[A-Z_]+__/); if (left) throw new Error("トップに置き換えていない " + left[0] + " が残っています");
 fs.mkdirSync(path.join(ROOT, "sheet"), { recursive: true });

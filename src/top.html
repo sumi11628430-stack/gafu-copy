@@ -101,7 +101,7 @@ h2 span, h1 span { background: linear-gradient(transparent 62%, var(--hl) 62%, v
 @media (min-width: 700px) { .gallery.g8 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .gallery.g6 { grid-template-columns: repeat(3, minmax(0, 1fr)); } } /* PCは 4列×2段・3列×2段 */
 .card .pic { position: relative; display: block; aspect-ratio: 1; font-size: 0; }
 .card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.card.locked .pic::after { content: "鍵つき"; position: absolute; top: 8px; right: 8px; font-size: .72rem; font-weight: 700; letter-spacing: .04em; padding: 2px 9px; border-radius: 999px; background: rgba(0, 0, 0, .62); color: #fff; }
+.card.locked .pic::after { content: "現在非公開"; position: absolute; top: 8px; right: 8px; font-size: .72rem; font-weight: 700; letter-spacing: .04em; padding: 2px 9px; border-radius: 999px; background: rgba(0, 0, 0, .62); color: #fff; }
 .card .pic img.before { position: absolute; left: 8px; bottom: 8px; width: 32%; height: auto; aspect-ratio: 1; border-radius: 8px; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0, 0, 0, .35); }
 
 /* 2枚を合わせる */
