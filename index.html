@@ -101,6 +101,7 @@ h2 span, h1 span { background: linear-gradient(transparent 62%, var(--hl) 62%, v
 @media (min-width: 700px) { .gallery.g8 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .gallery.g6 { grid-template-columns: repeat(3, minmax(0, 1fr)); } } /* PCは 4列×2段・3列×2段 */
 .card .pic { position: relative; display: block; aspect-ratio: 1; font-size: 0; }
 .card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card.locked .pic::after { content: "鍵つき"; position: absolute; top: 8px; right: 8px; font-size: .72rem; font-weight: 700; letter-spacing: .04em; padding: 2px 9px; border-radius: 999px; background: rgba(0, 0, 0, .62); color: #fff; }
 .card .pic img.before { position: absolute; left: 8px; bottom: 8px; width: 32%; height: auto; aspect-ratio: 1; border-radius: 8px; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0, 0, 0, .35); }
 
 /* 2枚を合わせる */
@@ -117,6 +118,7 @@ h2 span, h1 span { background: linear-gradient(transparent 62%, var(--hl) 62%, v
 .end { text-align: center; display: flex; flex-direction: column; gap: 14px; align-items: stretch; }
 footer { font-size: .78rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 4px; }
 footer p { margin: 0; }
+footer .credit { margin-top: 8px; text-align: center; letter-spacing: .04em; }
 @media (max-width: 420px) { .two { grid-template-columns: 1fr auto 1fr; } .two .eq, .two figure.res { grid-column: 1 / -1; } .two .eq { justify-self: center; font-size: 0; } .two .eq::after { content: "↓"; font-size: 1.6rem; } }
 </style>
 </head>
@@ -134,7 +136,7 @@ footer p { margin: 0; }
     <div class="cta one">
       <a class="btn primary" href="sheet/">プロンプトを作る<small><span class="nb">1枚で画風を変える・</span><span class="nb">2枚を合わせる・</span><span class="nb">もしもシリーズ</span></small></a>
     </div>
-    <ul class="badges"><li>画風の例 78種</li><li>もしも 48種</li><li>文字・縦横比も選べる</li><li>登録なし</li><li>入力はどこにも送信されません</li></ul>
+    <ul class="badges"><li>画風の例 78種</li><li>もしも 8種（鍵つき40種）</li><li>文字・縦横比も選べる</li><li>登録なし</li><li>入力はどこにも送信されません</li></ul>
     <a class="down" href="#how">↓ 使い方と見本を見る</a>
   </header>
 
@@ -188,10 +190,10 @@ footer p { margin: 0; }
     <div class="gallery g6">
       <a class="card mcard" href="sheet/?mode=3&amp;m=4" data-moshi="戦国武将"><span class="pic"><img src="images/moshi/samurai.webp" width="480" height="480" alt="戦国武将の作例" loading="lazy"><img class="before" src="images/moshi/samurai-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>戦国武将</b><span>人も犬も、甲冑姿に</span></div></a>
       <a class="card mcard" href="sheet/?mode=3&amp;m=13" data-moshi="宇宙飛行士"><span class="pic"><img src="images/moshi/astro.webp" width="480" height="480" alt="宇宙飛行士の作例" loading="lazy"><img class="before" src="images/moshi/astro-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>宇宙飛行士</b><span>2人と犬が、そろって宇宙へ</span></div></a>
-      <a class="card mcard" href="sheet/?mode=3&amp;m=28" data-moshi="箱入りのフィギュア"><span class="pic"><img src="images/moshi/figure.webp" width="480" height="480" alt="箱入りのフィギュアの作例" loading="lazy"><img class="before" src="images/moshi/figure-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>箱入りのフィギュア</b><span>持ち物は付属品に</span></div></a>
-      <a class="card mcard" href="sheet/?mode=3&amp;m=25" data-moshi="人間"><span class="pic"><img src="images/moshi/human.webp" width="480" height="480" alt="人間（人以外向け）の作例" loading="lazy"><img class="before" src="images/moshi/human-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>人間（人以外向け）</b><span>三毛猫が、人の姿だったら</span></div></a>
-      <a class="card mcard" href="sheet/?mode=3&amp;m=43" data-moshi="一輪の花"><span class="pic"><img src="images/moshi/flower.webp" width="480" height="480" alt="一輪の花の作例" loading="lazy"><img class="before" src="images/moshi/flower-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>一輪の花</b><span>似合う花と称号を、AIが選ぶ</span></div></a>
-      <a class="card mcard" href="sheet/?mode=3&amp;m=39" data-moshi="アニメの主人公"><span class="pic"><img src="images/moshi/anime.webp" width="480" height="480" alt="アニメの主人公の作例" loading="lazy"><img class="before" src="images/moshi/anime-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>アニメの主人公</b><span>架空の題名も、AIが考える</span></div></a>
+      <a class="card mcard locked" href="sheet/?mode=3&amp;m=28" data-moshi="箱入りのフィギュア"><span class="pic"><img src="images/moshi/figure.webp" width="480" height="480" alt="箱入りのフィギュアの作例" loading="lazy"><img class="before" src="images/moshi/figure-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>箱入りのフィギュア</b><span>持ち物は付属品に</span></div></a>
+      <a class="card mcard locked" href="sheet/?mode=3&amp;m=25" data-moshi="人間"><span class="pic"><img src="images/moshi/human.webp" width="480" height="480" alt="人間（人以外向け）の作例" loading="lazy"><img class="before" src="images/moshi/human-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>人間（人以外向け）</b><span>三毛猫が、人の姿だったら</span></div></a>
+      <a class="card mcard locked" href="sheet/?mode=3&amp;m=43" data-moshi="一輪の花"><span class="pic"><img src="images/moshi/flower.webp" width="480" height="480" alt="一輪の花の作例" loading="lazy"><img class="before" src="images/moshi/flower-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>一輪の花</b><span>似合う花と称号を、AIが選ぶ</span></div></a>
+      <a class="card mcard locked" href="sheet/?mode=3&amp;m=39" data-moshi="アニメの主人公"><span class="pic"><img src="images/moshi/anime.webp" width="480" height="480" alt="アニメの主人公の作例" loading="lazy"><img class="before" src="images/moshi/anime-before.webp" width="160" height="160" alt="元の写真" loading="lazy"></span><div><b>アニメの主人公</b><span>架空の題名も、AIが考える</span></div></a>
     </div>
     <p>作例は、AIで作った架空の人物・ペットの写真（左下の小さい写真）を、このページのプロンプトを使ってOpenAIの画像生成で変身させたものです。</p>
     <p class="fn">※ 仕上がりは、使うAIやモデルによって差が出ます。同じプロンプトでも、作例と同じにならないことがあります。</p>
@@ -219,6 +221,7 @@ footer p { margin: 0; }
   <footer>
     <p>このページは個人が作ったもので、OpenAIとは関係ありません。ChatGPTはOpenAIのサービスです。</p>
     <p>入力した言葉や選んだ内容は、ページの中だけで使われ、どこにも送信・保存されません。</p>
+    <p class="credit">Uniter-presents © 2025 A.T.L / 繋がりプロジェクト</p>
   </footer>
 </div>
 

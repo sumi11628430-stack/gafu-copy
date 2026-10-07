@@ -41,7 +41,7 @@ figcaption {{ position:absolute; left:10px; bottom:10px; font-size:19px; padding
 </style></head><body><div class="card">
 <div class="text"><h1><span>画風コピペシート</span></h1>
 <p>写真1枚を、好きな画風に。<br>もしもの姿にも。<br>ChatGPTなどのAIに貼る<br>プロンプトを、<br>選ぶだけで作れます。</p>
-<div class="chips"><span class="chip" style="border-bottom-color:#7fb4e8">画風の例 78種</span><span class="chip" style="border-bottom-color:#f096a0">もしも 48種</span></div>
+<div class="chips"><span class="chip" style="border-bottom-color:#7fb4e8">画風の例 78種</span><span class="chip" style="border-bottom-color:#f096a0">もしも 8種（鍵つき40種）</span></div>
 <p class="credit">見本は、AIで作った架空の人物と犬の写真を<br>このサイトのプロンプトで描き直したものです</p></div>
 <div class="grid">{figs}</div>
 </div></body></html>"""

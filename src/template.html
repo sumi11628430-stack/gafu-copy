@@ -146,6 +146,7 @@ details ul { margin: 8px 0 0; padding-left: 1.2em; display: flex; flex-direction
 details a, footer a { color: var(--accent); }
 footer { font-size: 0.78rem; color: var(--muted); display: flex; flex-direction: column; gap: 4px; padding-top: 8px; border-top: 1px solid var(--line); }
 footer p { margin: 0; }
+footer .credit { margin-top: 8px; text-align: center; letter-spacing: 0.04em; }
 .bar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--bar-bg); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-top: 1px solid var(--line); padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); }
 .bar-inner { max-width: 760px; margin: 0 auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .bar .sel { flex: 1 1 220px; min-width: 0; font-size: 0.8rem; line-height: 1.5; }
@@ -169,6 +170,10 @@ footer p { margin: 0; }
 .mcard .badge, .mbadges .badge { margin-left: 0; }
 .badge.ai { background: var(--accent-soft); color: var(--accent); }
 .badge.aim { background: var(--orig-soft); color: var(--orig); }
+.badge.lock { background: var(--paper); color: var(--muted); border: 1px solid var(--line); }
+.mcard.locked { background: transparent; border-style: dashed; }
+.mcard.locked .t { color: var(--muted); }
+.locknote { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 30; width: max-content; max-width: calc(100% - 32px); margin: 0; padding: 10px 14px; border-radius: 12px; background: var(--paper); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--card-shadow); font-size: 0.85rem; line-height: 1.5; pointer-events: none; }
 .legend .count { font-variant-numeric: tabular-nums; }
 .msheet-back { position: fixed; inset: 0; background: rgba(20, 24, 34, .45); z-index: 20; }
 .msheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; max-height: 88vh; max-height: 88dvh; overflow-y: auto; overscroll-behavior: contain; background-color: var(--paper); background-image: var(--grain); border-top: 1px solid var(--line); border-radius: 20px 20px 0 0; box-shadow: 0 -12px 40px -20px rgba(0, 0, 0, .5); padding: 0 16px calc(16px + env(safe-area-inset-bottom, 0px)); }
@@ -243,7 +248,7 @@ body.sheet-open { overflow: hidden; }
     <h2><span class="step">もしも</span>もしもあなたが〇〇だったら</h2>
     <p class="note">選ぶと、そのもしものプロンプトが出ます。写真の人やペット、ぬいぐるみ・置物・自分で描いたキャラの絵などが、その姿に生まれ変わった1枚になります。どの写真でも選べます（「人以外向け」の印があるものは、人だけの写真では作れません）。</p>
     <div class="fchips" role="group" aria-label="しぼりこみ" id="mfilter"></div>
-    <p class="legend">★話題になったもの　◆このサイトで考えた案　<span class="count" id="mcount"></span></p>
+    <p class="legend">★話題になったもの　◆このサイトで考えた案<span id="mlock-legend" hidden>　鍵つき＝いまは使えません（合言葉で開けられるように準備中）</span>　<span class="count" id="mcount"></span></p>
     <div class="cats" id="mcats"></div>
     <ul class="points" id="mnotes-top"></ul>
     <details>
@@ -365,6 +370,7 @@ body.sheet-open { overflow: hidden; }
   <footer>
     <p>このページは個人が作ったもので、OpenAIとは関係ありません。ChatGPTはOpenAIのサービスです。</p>
     <p>入力した言葉や選んだ内容は、このページの中だけで使われ、どこにも送信・保存されません。</p>
+    <p class="credit">Uniter-presents © 2025 A.T.L / 繋がりプロジェクト</p>
   </footer>
 </div>
 
@@ -432,6 +438,7 @@ body.sheet-open { overflow: hidden; }
   </div>
 </div>
 
+<p class="locknote" id="mlock-note" role="status" hidden></p>
 <div class="bar" id="bar">
   <div class="bar-inner">
     <div class="sel" id="bar-sel"></div>
@@ -658,7 +665,7 @@ $("legend2").textContent = DATA.legend2;
 DATA.notes2.forEach((n) => { const li = document.createElement("li"); li.textContent = n; $("notes2").appendChild(li); });
 $("notes2-count").textContent = DATA.notes2.length;
 function setMode(m) {
-  S.mode = m;
+  S.mode = m; $("mlock-note").hidden = true;
   const three = m === 3;
   document.querySelectorAll(".mode").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.mode === m)));
   $("two").hidden = m !== 2; $("howto1").hidden = m !== 1; $("howto2").hidden = m !== 2; $("howto3").hidden = !three; $("note1-two").hidden = m !== 2;
@@ -686,7 +693,7 @@ const MO = DATA.moshi;
 const MITEMS = MO.cats.flatMap((c) => c.items);
 const M = { cam: "おまかせ", logo: false, safe: true, filter: "all", it: null, look: "写真", like: "しっかり", gor: "ふつう", ai: "なし", ownType: "", ownWord: "", ratio: "", avoid: [], opener: null };
 const AI_SHORT = { "名前と称号": "名前と称号", "題名とひとこと": "題名とひとこと", "ステータス": "能力カード", "セリフと言葉": "セリフとひとこと" };
-const AI_LABEL = { "なし": "入れない", "名前と称号": "名前と称号", "題名とひとこと": "架空の題名とひとこと", "ステータス": "職業と能力のカード", "セリフと言葉": "キャラの有名なセリフと、生き方にちなんだひとこと" };
+const AI_LABEL = { "なし": "入れない", "名前と称号": "名前と称号", "題名とひとこと": "架空の題名とひとこと", "ステータス": "職業と能力のカード", "セリフと言葉": MO.work ? MO.work.aiLabel : "" }; // 作品キャラの文は、その選択肢を公開するときだけ DATA に入る
 function moshiTitle(it) {
   if (it.theme === "たとえ") return "もしもあなたを" + it.label + "にたとえたら";
   return "もしもあなたが" + it.label + (it.theme === "になったら" ? "になったら" : "だったら");
@@ -713,7 +720,7 @@ function moshiPrompt() {
   const cam = it.camera !== "固定" && M.cam !== "おまかせ" ? MO.cams.find((c) => c.label === M.cam) : null; // おまかせ・固定は何も足さない
   const camText = cam ? cam.text : ""; // 作品のロゴ・題字を入れる（守り＝作品の選択肢だけ）
   const hasText = M.ai !== "なし" || !!own || logo;
-  const work = it.guard === "作品"; // 作品のキャラ（42）は専用の核（住さんが縮めた文面）。守り・除外の行は入れず、縦横比は選んだときだけ
+  const work = it.guard === "作品"; // 作品のキャラ（42）は専用の核（短くした文面）。守り・除外の行は入れず、縦横比は選んだときだけ
   let self;
   if (it.self === "基本") self = P["本人らしさ（基本・" + look + "）"] + "\n" + P["本人らしさ（人以外の行）"];
   else self = P["本人らしさ（" + it.self + "）"];
@@ -762,6 +769,7 @@ function moshiBadges(it, look) {
 }
 function moshiVisible(it) {
   const f = M.filter;
+  if (f === "open") return !it.locked;
   if (f === "season") return it.months.includes(new Date().getMonth() + 1);
   if (f === "pop") return it.mark === "★";
   if (f === "ai") return it.kind !== "選ぶ";
@@ -775,8 +783,8 @@ for (const cat of MO.cats) {
   const list = document.createElement("div"); list.className = "mlist";
   for (const it of cat.items) {
     const b = document.createElement("button");
-    b.className = "mcard"; b.type = "button"; b.dataset.n = it.n;
-    b.innerHTML = '<span class="t">' + esc(it.label) + '</span>' + '<span class="b">' + moshiBadges(it, it.look) + '</span>' + (it.hint ? '<span class="h">' + esc(it.hint) + '</span>' : "");
+    b.className = "mcard" + (it.locked ? " locked" : ""); b.type = "button"; b.dataset.n = it.n; if (it.locked) b.setAttribute("aria-disabled", "true");
+    b.innerHTML = '<span class="t">' + esc(it.label) + '</span>' + '<span class="b">' + moshiBadges(it, it.look) + (it.locked ? '<span class="badge lock">鍵つき</span>' : "") + '</span>' + (it.hint ? '<span class="h">' + esc(it.hint) + '</span>' : "");
     b.addEventListener("click", () => openSheet(it.n, b));
     list.appendChild(b);
   }
@@ -785,6 +793,7 @@ for (const cat of MO.cats) {
 (function moshiFilters() {
   const month = new Date().getMonth() + 1;
   const fs = [["all", "すべて"]];
+  if (MITEMS.some((it) => it.locked)) { fs.push(["open", "使える物"]); $("mlock-legend").hidden = false; }
   if (MITEMS.some((it) => it.months.includes(month))) fs.push(["season", "いまの季節"]);
   fs.push(["pop", "★話題"], ["ai", "AIが選ぶ"]);
   MO.cats.forEach((c, i) => fs.push(["cat" + i, c.name]));
@@ -795,13 +804,14 @@ for (const cat of MO.cats) {
   }
 })();
 function renderMoshiList() {
-  let total = 0;
+  let total = 0, lockedN = 0;
+  $("mlock-note").hidden = true;
   document.querySelectorAll("#mcats .mcat").forEach((box, ci) => {
     let shown = 0;
-    box.querySelectorAll(".mcard").forEach((b) => { const ok = moshiVisible(MITEMS.find((x) => x.n === +b.dataset.n)); b.hidden = !ok; if (ok) shown++; });
+    box.querySelectorAll(".mcard").forEach((b) => { const ok = moshiVisible(MITEMS.find((x) => x.n === +b.dataset.n)); b.hidden = !ok; if (ok) { shown++; if (b.classList.contains("locked")) lockedN++; } });
     box.hidden = shown === 0; total += shown;
   });
-  $("mcount").textContent = total + "件";
+  $("mcount").textContent = total + "件" + (lockedN ? "（うち鍵つき " + lockedN + "件）" : "");
   document.querySelectorAll("#mfilter button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.f === M.filter)));
 }
 MO.notesTop.forEach((n) => { const li = document.createElement("li"); li.textContent = n; $("mnotes-top").appendChild(li); });
@@ -816,8 +826,15 @@ for (const it of DATA.list3) { const o = document.createElement("option"); o.val
     const p = document.createElement("option"); p.value = it.text; p.textContent = split(it.text)[0] + "（" + split(it.text)[1] + "）"; $("mowntype").appendChild(p);
   }
 })();
+// 鍵つきの選択肢を押したときの案内（数秒で消える）
+function showLockNote(it) {
+  const p = $("mlock-note"); p.textContent = "「" + it.label + "」は鍵つきです。合言葉で開けられるように、準備をしています。"; p.hidden = false;
+  clearTimeout(p._t); p._t = setTimeout(() => { p.hidden = true; }, 5000);
+}
 function openSheet(n, opener, fromUrl) {
   const it = MITEMS.find((x) => x.n === n); if (!it) return;
+  $("mlock-note").hidden = true;
+  if (it.locked) { showLockNote(it); return; } // 鍵つきは、押しても、リンク（m=番号）で来ても開かず、案内だけ出す
   Object.assign(M, { cam: it.camera === "固定" ? "おまかせ" : it.camera, logo: false, safe: true, it, look: it.look, like: it.like, gor: it.gor, ai: it.ai, ownType: "", ownWord: "", ratio: it.ratio, avoid: [], opener: opener || null });
   const sel = $("mai"); sel.innerHTML = "";
   for (const v of moshiAiChoices(it)) { const o = document.createElement("option"); o.value = v; o.textContent = AI_LABEL[v]; sel.appendChild(o); }
@@ -883,9 +900,7 @@ function renderSheet() {
   $("mcam-note").hidden = it.camera === "固定";
   $("mlogo").hidden = $("mlogo-lab").hidden = it.guard !== "作品";
   $("msafe").hidden = $("msafe-lab").hidden = $("msafe-note").hidden = it.guard !== "作品";
-  $("msafe-note").textContent = M.safe
-    ? "胸元やお腹が開く服は中にTシャツ、短いスカートやパンツにはスパッツを合わせ、のぞくアングルや体の傷は描きません。"
-    : "胸元が開いた服や体の傷も、キャラクターのとおりに描きます。スカートの中が見えるアングル、水着や下着のような見せ方にはなりません。子どもの写真では、OFFでも胸元を隠します。";
+  $("msafe-note").textContent = it.guard === "作品" && MO.work ? (M.safe ? MO.work.safeOn : MO.work.safeOff) : "";
   document.querySelectorAll("#msafe button").forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.v === "on") === M.safe)));
   $("mlogo-note").hidden = !(it.guard === "作品" && M.logo);
   document.querySelectorAll("#mlogo button").forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.v === "あり") === M.logo)));
@@ -945,8 +960,9 @@ document.querySelectorAll(".tab").forEach((t) => {
 document.querySelectorAll("button.next").forEach((b) => b.addEventListener("click", () => setTab(+b.dataset.go)));
 (function startFromUrl() {
   let q; try { q = new URLSearchParams(location.search); } catch (e) { return; }
-  const n = parseInt(q.get("s"), 10);
-  if (n) { const it = DATA.categories.flatMap((c) => c.items).find((x) => x.n === n); if (it) S.s1 = it.text; }
+  // s= は、数字なら番号つきリンクの番号（番号を振り直す前の番号。DATA.sid が今の画風に結ぶ。画面の番号とは別）、それ以外は画風の名前
+  const sq = (q.get("s") || "").trim();
+  if (sq) { const it = DATA.categories.flatMap((c) => c.items).find((x) => /^\d+$/.test(sq) ? x.text === DATA.sid[+sq] : split(x.text)[0] === sq); if (it) S.s1 = it.text; }
   if (q.get("mode") === "2") { setMode(2); return; }
   if (q.get("mode") === "3") {
     setMode(3);
@@ -954,7 +970,7 @@ document.querySelectorAll("button.next").forEach((b) => b.addEventListener("clic
     return;
   }
   render();
-  if (n) { const b = document.querySelector('.style-item[aria-pressed="true"]'); if (b) b.scrollIntoView({ block: "center" }); }
+  if (sq) { const b = document.querySelector('.style-item[aria-pressed="true"]'); if (b) b.scrollIntoView({ block: "center" }); }
 })();
 </script>
 </body>
