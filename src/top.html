@@ -48,12 +48,27 @@
 [hidden] { display: none !important; }
 .totop { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 15; width: 48px; height: 48px; padding: 0; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--accent); font: inherit; font-size: 1.4rem; font-weight: 700; line-height: 1; cursor: pointer; box-shadow: 0 8px 18px -8px rgba(40, 50, 90, .55); }
 .totop:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.gate { position: fixed; inset: 0; z-index: 50; background: #cfc8bb; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+.gate .tile { position: absolute; width: var(--tw); height: auto; aspect-ratio: 3 / 2; object-fit: cover; border: var(--bd) solid #f6f3ec; box-shadow: 0 6px 16px -6px rgba(30, 30, 40, .55); }
+.gate-in { position: relative; z-index: 100; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 24px 22px 20px; width: min(92vw, 520px); background: var(--paper); border: 3px solid var(--accent); border-radius: 26px; box-shadow: 0 18px 44px -14px rgba(20, 24, 40, .7); }
+.gate .k { margin: 0; color: var(--accent); font-weight: 700; letter-spacing: .04em; }
+.gate .big { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.75rem, 8.2vw, 2.9rem); line-height: 1.25; letter-spacing: .04em; margin: 0; word-break: keep-all; }
+.gate .go { font: inherit; font-weight: 700; font-size: 1.1rem; width: 100%; margin-top: 6px; padding: 13px 10px; border-radius: 999px; border: 2px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; box-shadow: 0 4px 0 rgba(30, 50, 110, .55); }
+.gate .go:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.gate .cap { position: relative; z-index: 101; margin: 0; font-size: .74rem; color: #fff; background: rgba(30, 32, 40, .72); padding: 3px 12px; border-radius: 999px; white-space: nowrap; }
+.gate.out { opacity: 0; }
+@media (max-height: 340px) { .gate { gap: 6px; } .gate-in { padding: 10px 22px 12px; gap: 4px; } .gate .big { font-size: 1.55rem; } .gate .go { padding: 8px 10px; margin-top: 2px; } }
+@media (prefers-reduced-motion: no-preference) { .gate { transition: opacity .45s ease; } }
+body.gate-on { overflow: hidden; }
+.bgm { position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 15; width: 48px; height: 48px; padding: 0; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--accent); font: inherit; font-size: 1.4rem; font-weight: 700; line-height: 1; cursor: pointer; box-shadow: 0 8px 18px -8px rgba(40, 50, 90, .55); }
+.bgm.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.bgm:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { margin: 0; color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.75; background-color: var(--paper);
   background-image: radial-gradient(ellipse 38% 26% at 6% 3%, var(--blot-1), transparent 70%), radial-gradient(ellipse 34% 24% at 98% 8%, var(--blot-2), transparent 70%), radial-gradient(ellipse 36% 26% at 94% 92%, var(--blot-3), transparent 70%), radial-gradient(ellipse 34% 24% at 4% 96%, var(--blot-4), transparent 70%), var(--grain);
   background-attachment: fixed; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
-.wrap { max-width: 880px; margin: 0 auto; padding-inline: 16px; padding-block: 0 48px; display: flex; flex-direction: column; gap: 56px; }
+.wrap { max-width: 880px; margin: 0 auto; padding-inline: 16px; padding-block: 0 96px; display: flex; flex-direction: column; gap: 56px; }
 a { color: var(--accent); }
 h1, h2 { font-family: var(--font-display); letter-spacing: .06em; text-wrap: balance; margin: 0; }
 h2 { font-size: 1.5rem; }
@@ -227,6 +242,7 @@ footer .credit { margin-top: 8px; text-align: center; letter-spacing: .04em; }
   </footer>
 </div>
 
+<button type="button" class="bgm" id="bgm" aria-label="曲を流す" title="曲を流す" hidden>♪</button>
 <button type="button" class="totop" id="totop" aria-label="ページの一番上へ" title="ページの一番上へ" hidden>↑</button>
 <script>
 // 一番上へ戻る矢印：ページの半分より下までスクロールしたら、画面の下の中央に出す。押すと一番上へ跳ぶ
@@ -236,6 +252,78 @@ footer .credit { margin-top: 8px; text-align: center; letter-spacing: .04em; }
   addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd);
   btn.addEventListener("click", () => { try { scrollTo({ top: 0, behavior: "instant" }); } catch (e) { scrollTo(0, 0); } });
   upd();
+})();
+</script>
+<script>
+// 曲（BGM）の部品。♪ で流す・止めるを切り替える。切り替えだけは、タブを閉じるまでブラウザが覚えて（どこにも送らない）、ページを移っても続ける
+function bgmSetup(btn, song) {
+  const KEY = "gafu-bgm", GEST = ["pointerdown", "pointerup", "touchend", "keydown"];
+  let audio = null, on = false, waiting = false; // on＝「流す」と頼まれている（読み込み中・最初の操作を待っている間も含む）。♪ の表示はこれで決める
+  const pref = () => { try { return sessionStorage.getItem(KEY); } catch (e) { return null; } };
+  const save = (v) => { try { sessionStorage.setItem(KEY, v ? "on" : "off"); } catch (e) {} };
+  const setOn = (v) => { on = v; const t = v ? "曲を止める" : "曲を流す"; btn.classList.toggle("on", v); btn.setAttribute("aria-label", t); btn.title = t; };
+  const onGest = () => { if (waiting && on) play(); };
+  const wait = (v) => { if (v === waiting) return; waiting = v; GEST.forEach((t) => window[v ? "addEventListener" : "removeEventListener"](t, onGest, true)); };
+  const play = () => {
+    if (audio && audio.error) audio = null; // 読めなかった曲は、作り直して読み直す（電波が戻ったら、また鳴らせるように）
+    if (!audio) {
+      const a = new Audio(song); a.loop = true; audio = a;
+      a.addEventListener("playing", () => { if (a === audio) { wait(false); setOn(true); } });
+      a.addEventListener("pause", () => { if (a === audio) setOn(false); });
+      a.addEventListener("error", () => { if (a === audio) setOn(false); });
+    }
+    setOn(true);
+    const a = audio, p = a.play();
+    if (p && p.catch) p.catch((e) => {
+      if (a !== audio) return;
+      if (e && e.name === "NotAllowedError") wait(true); // ブラウザが自動の再生を止めたとき：次の操作（タップ・キー）で流す
+      else if (a.paused || a.error) setOn(false);
+    });
+  };
+  btn.addEventListener("click", () => { if (on) { wait(false); if (audio) audio.pause(); setOn(false); save(false); } else { play(); save(true); } });
+  // start＝いま流す（入口の「はじめる」）／resume＝前のページで流したままなら、続けて流す
+  const resume = () => { if (pref() === "on") play(); };
+  addEventListener("pageshow", (e) => { if (e.persisted) resume(); }); // ブラウザの「戻る・進む」でページがそのまま戻ったとき（スクリプトは動き直さない）も、続けて流す
+  return { start: () => { play(); save(true); }, resume };
+}
+// 入口（タイトル画面）と曲。入口は、見本の絵のタイルを背景に敷いて、最初に1回だけ出す。「はじめる」を押すと曲が流れ、右下の ♪ で止める・流すを切り替える
+(function () {
+  const TILES = 38; // images/gate/t01〜t38.webp
+  const bgm = document.getElementById("bgm"), wrap = document.querySelector(".wrap"), B = bgmSetup(bgm, "audio/bgm.m4a");
+  // 入口を出さないとき：サイトの中のページから来た／戻る・進む・読み込み直しで来た（入った印は、このページの履歴に付ける）／ページの途中（#…）を指して来た
+  let nav = "", inner = false;
+  try { nav = performance.getEntriesByType("navigation")[0].type; } catch (e) {}
+  try { inner = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
+  if ((history.state && history.state.gate) || inner || nav === "back_forward" || location.hash) { bgm.hidden = false; B.resume(); return; }
+  const gate = document.createElement("div"); gate.className = "gate"; gate.setAttribute("role", "dialog"); gate.setAttribute("aria-modal", "true"); gate.setAttribute("aria-labelledby", "gate-big");
+  gate.innerHTML = '<div class="tiles" aria-hidden="true"></div><div class="gate-in"><p class="k">写真1枚、選ぶだけ</p><p class="big" id="gate-big">この1枚、<wbr>何風にする？</p><button type="button" class="go" id="gate-go">はじめる</button></div><p class="cap">絵は、AIで作った見本です</p>';
+  const tiles = gate.firstChild; let laidW = 0, laidH = 0;
+  // タイルを画面いっぱいに敷く。並びと傾きは、決まった種から作るので、開くたびに同じ
+  const lay = () => {
+    let s = 20261007; const rnd = () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296;
+    const W = innerWidth, H = innerHeight + 120, tw = W < 600 ? 178 : Math.max(250, Math.round(W / 4.6)), th = tw / 1.5, sx = tw * 0.74, sy = th * 0.76;
+    const cols = Math.ceil(W / sx) + 1, rows = Math.ceil(H / sy) + 1, order = Array.from({ length: TILES }, (_, i) => i + 1);
+    for (let i = TILES - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+    let html = "", k = 0;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const x = c * sx - tw * 0.32 + (rnd() - 0.5) * tw * 0.14 + (r % 2 ? sx * 0.42 : 0) - sx * 0.2, y = r * sy - th * 0.36 + (rnd() - 0.5) * th * 0.14, rot = (rnd() - 0.5) * 18;
+      html += '<img class="tile" alt="" decoding="async" src="images/gate/t' + String(order[k++ % TILES]).padStart(2, "0") + '.webp" style="left:' + x.toFixed(0) + 'px;top:' + y.toFixed(0) + 'px;transform:rotate(' + rot.toFixed(1) + 'deg);z-index:' + Math.floor(rnd() * 40) + '">';
+    }
+    gate.style.setProperty("--tw", tw + "px"); gate.style.setProperty("--bd", (W < 600 ? 6 : 9) + "px");
+    tiles.innerHTML = html; laidW = W; laidH = H;
+  };
+  // 画面の幅が変わったとき・高さが敷いた分より伸びたときだけ、敷き直す（スマホでアドレスバーが出入りするたびに敷き直さない）
+  const onResize = () => { if (innerWidth !== laidW || innerHeight > laidH) lay(); };
+  lay(); document.body.appendChild(gate); document.body.classList.add("gate-on"); wrap.inert = true; addEventListener("resize", onResize);
+  const go = document.getElementById("gate-go"); go.focus({ preventScroll: true });
+  let entered = false;
+  go.addEventListener("click", () => {
+    if (entered) return; entered = true; // すばやく2回押されても1回だけ。消え終わるまで入口が押しを受け止め、後ろのページ（リンクなど）には当てない
+    B.start();
+    try { history.replaceState(Object.assign({}, history.state, { gate: 1 }), ""); } catch (e) {}
+    removeEventListener("resize", onResize); gate.classList.add("out");
+    setTimeout(() => { gate.remove(); document.body.classList.remove("gate-on"); wrap.inert = false; bgm.hidden = false; }, 500);
+  });
 })();
 </script>
 </body>

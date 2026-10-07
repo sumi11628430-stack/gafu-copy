@@ -73,7 +73,7 @@
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background-color: var(--paper); background-image: radial-gradient(ellipse 38% 26% at 6% 3%, var(--blot-1), transparent 70%), radial-gradient(ellipse 34% 24% at 98% 8%, var(--blot-2), transparent 70%), radial-gradient(ellipse 36% 26% at 94% 92%, var(--blot-3), transparent 70%), radial-gradient(ellipse 34% 24% at 4% 96%, var(--blot-4), transparent 70%), var(--grain); background-attachment: fixed; color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.7; padding-top: env(safe-area-inset-top, 0px); }
-.wrap { max-width: 760px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 150px; display: flex; flex-direction: column; gap: 20px; }
+.wrap { max-width: 760px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 200px; display: flex; flex-direction: column; gap: 20px; }
 header { display: flex; flex-direction: column; gap: 8px; }
 h1 { font-family: var(--font-display); font-size: 2rem; line-height: 1.3; margin: 0; text-wrap: balance; letter-spacing: 0.06em; }
 h1 span { background: linear-gradient(transparent 62%, var(--hl) 62%, var(--hl) 92%, transparent 92%); }
@@ -197,7 +197,11 @@ body.sheet-open { overflow: hidden; }
 .totop { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 15; width: 48px; height: 48px; padding: 0; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--accent); font: inherit; font-size: 1.4rem; font-weight: 700; line-height: 1; cursor: pointer; box-shadow: 0 8px 18px -8px rgba(40, 50, 90, .55); }
 .totop:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 body.sheet-open .totop { display: none; }
-body.totop-on .locknote { bottom: calc(78px + env(safe-area-inset-bottom, 0px)); }
+.bgm { position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 15; width: 48px; height: 48px; padding: 0; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--accent); font: inherit; font-size: 1.4rem; font-weight: 700; line-height: 1; cursor: pointer; box-shadow: 0 8px 18px -8px rgba(40, 50, 90, .55); }
+.bgm.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.bgm:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+body.sheet-open .bgm { display: none; }
+.locknote { bottom: calc(78px + env(safe-area-inset-bottom, 0px)); }
 .seg button:focus-visible, .fchips button:focus-visible, .mcard:focus-visible, .msheet-close:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: no-preference) { .style-item, .chip, button { transition: background-color .15s, border-color .15s; } .msheet:not([hidden]) { animation: sheet-up .2s ease-out; } }
 @keyframes sheet-up { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
@@ -448,6 +452,7 @@ body.totop-on .locknote { bottom: calc(78px + env(safe-area-inset-bottom, 0px));
   </div>
 </div>
 
+<button type="button" class="bgm" id="bgm" aria-label="曲を流す" title="曲を流す" hidden>♪</button>
 <button type="button" class="totop" id="totop" aria-label="ページの一番上へ" title="ページの一番上へ" hidden>↑</button>
 <p class="locknote" id="mlock-note" role="status" hidden></p>
 <div class="bar" id="bar">
@@ -990,14 +995,47 @@ document.querySelectorAll("button.next").forEach((b) => b.addEventListener("clic
   const btn = $("totop"), bar = $("bar");
   const upd = () => {
     const max = document.documentElement.scrollHeight - innerHeight, show = scrollY > 200 && scrollY >= max / 2;
-    btn.hidden = !show; document.body.classList.toggle("totop-on", show);
-    btn.style.bottom = bar.hidden ? "" : (bar.offsetHeight + 12) + "px";
+    btn.hidden = !show;
+    btn.style.bottom = $("bgm").style.bottom = bar.hidden ? "" : (bar.offsetHeight + 12) + "px"; // ♪ も同じ高さに
   };
   addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd);
-  if (window.ResizeObserver) new ResizeObserver(upd).observe(document.body); // モードやしぼりこみでページの長さが変わったとき
+  if (window.ResizeObserver) { const ro = new ResizeObserver(upd); ro.observe(document.body); ro.observe(bar); } // モードやしぼりこみでページの長さが変わったとき・「コピーしました」でバーの高さが変わったとき
   btn.addEventListener("click", () => { try { scrollTo({ top: 0, behavior: "instant" }); } catch (e) { scrollTo(0, 0); } });
   upd();
 })();
+// 曲（BGM）の部品。♪ で流す・止めるを切り替える。切り替えだけは、タブを閉じるまでブラウザが覚えて（どこにも送らない）、ページを移っても続ける
+function bgmSetup(btn, song) {
+  const KEY = "gafu-bgm", GEST = ["pointerdown", "pointerup", "touchend", "keydown"];
+  let audio = null, on = false, waiting = false; // on＝「流す」と頼まれている（読み込み中・最初の操作を待っている間も含む）。♪ の表示はこれで決める
+  const pref = () => { try { return sessionStorage.getItem(KEY); } catch (e) { return null; } };
+  const save = (v) => { try { sessionStorage.setItem(KEY, v ? "on" : "off"); } catch (e) {} };
+  const setOn = (v) => { on = v; const t = v ? "曲を止める" : "曲を流す"; btn.classList.toggle("on", v); btn.setAttribute("aria-label", t); btn.title = t; };
+  const onGest = () => { if (waiting && on) play(); };
+  const wait = (v) => { if (v === waiting) return; waiting = v; GEST.forEach((t) => window[v ? "addEventListener" : "removeEventListener"](t, onGest, true)); };
+  const play = () => {
+    if (audio && audio.error) audio = null; // 読めなかった曲は、作り直して読み直す（電波が戻ったら、また鳴らせるように）
+    if (!audio) {
+      const a = new Audio(song); a.loop = true; audio = a;
+      a.addEventListener("playing", () => { if (a === audio) { wait(false); setOn(true); } });
+      a.addEventListener("pause", () => { if (a === audio) setOn(false); });
+      a.addEventListener("error", () => { if (a === audio) setOn(false); });
+    }
+    setOn(true);
+    const a = audio, p = a.play();
+    if (p && p.catch) p.catch((e) => {
+      if (a !== audio) return;
+      if (e && e.name === "NotAllowedError") wait(true); // ブラウザが自動の再生を止めたとき：次の操作（タップ・キー）で流す
+      else if (a.paused || a.error) setOn(false);
+    });
+  };
+  btn.addEventListener("click", () => { if (on) { wait(false); if (audio) audio.pause(); setOn(false); save(false); } else { play(); save(true); } });
+  // start＝いま流す（入口の「はじめる」）／resume＝前のページで流したままなら、続けて流す
+  const resume = () => { if (pref() === "on") play(); };
+  addEventListener("pageshow", (e) => { if (e.persisted) resume(); }); // ブラウザの「戻る・進む」でページがそのまま戻ったとき（スクリプトは動き直さない）も、続けて流す
+  return { start: () => { play(); save(true); }, resume };
+}
+// このページの曲：静かな曲を小さめの音で流す（音の大きさは、ファイルの側でトップの曲の30％にしてある）。トップで曲を流したまま来たときは、続けて流す
+(function () { const b = $("bgm"); b.hidden = false; bgmSetup(b, "../audio/lofi.m4a").resume(); })();
 </script>
 </body>
 </html>
