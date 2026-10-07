@@ -1034,7 +1034,7 @@ function bgmSetup(btn, song) {
   addEventListener("pageshow", (e) => { if (e.persisted) resume(); }); // ブラウザの「戻る・進む」でページがそのまま戻ったとき（スクリプトは動き直さない）も、続けて流す
   return { start: () => { play(); save(true); }, resume };
 }
-// このページの曲：静かな曲を小さめの音で流す（音の大きさは、ファイルの側でトップの曲の30％にしてある）。トップで曲を流したまま来たときは、続けて流す
+// このページの曲：静かな曲を流す（音の大きさは、トップの曲と同じく、ファイルの側で元の曲の10％に下げてある）。トップで曲を流したまま来たときは、続けて流す
 (function () { const b = $("bgm"); b.hidden = false; bgmSetup(b, "../audio/lofi.m4a").resume(); })();
 </script>
 </body>
