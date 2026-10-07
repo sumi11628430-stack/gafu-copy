@@ -426,10 +426,6 @@ body.sheet-open { overflow: hidden; }
       </div>
     </details>
     <details>
-      <summary>プロンプトの中身を見る</summary>
-      <pre class="text" id="mprompt"></pre>
-    </details>
-    <details>
       <summary>うまくいかないとき</summary>
       <pre class="text" id="mtips"></pre>
     </details>
@@ -896,7 +892,6 @@ function renderSheet() {
   $("mown-note").hidden = !M.ownType;
   const words = [M.ai !== "なし" ? AI_SHORT[M.ai] : "", M.ownType && M.ownWord.trim() ? "自分の言葉" : ""].filter(Boolean);
   $("mfinish-sum").textContent = "（いま：" + M.look + "・" + M.like + "・" + M.gor + "・文字＝" + (words.length ? words.join("＋") : "なし") + "・" + (M.ratio ? split(M.ratio)[0] : "縦横比おまかせ") + (M.avoid.length ? "・避ける" + M.avoid.length + "個" : "") + (M.it.camera !== "固定" && M.cam !== "おまかせ" ? "・" + M.cam : "") + (M.it.guard === "作品" && M.logo ? "・ロゴあり" : "") + (M.it.guard === "作品" && !M.safe ? "・セーフティOFF" : "") + "）";
-  $("mprompt").textContent = moshiPrompt();
 }
 for (const [id, key] of [["mlook", "look"], ["mlike", "like"], ["mgor", "gor"]])
   document.querySelectorAll("#" + id + " button").forEach((b) => b.addEventListener("click", () => {
