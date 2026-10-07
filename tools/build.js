@@ -73,13 +73,22 @@ for (const key of ["画風の既定", "作り方（絵）", "作り方（写真�
 const categories = []; let cur = null, legend1 = "";
 for (const line of examples.split("\n")) {
   if (line.startsWith("★＝")) legend1 = line;
-  else if (line.startsWith("■")) { cur = { name: line.slice(1), items: [] }; categories.push(cur); }
+  else if (line.startsWith("■")) { const h = line.slice(1).match(/^(.*?)(?:〔(素材|写真)〕)?$/); cur = { name: h[1], kind: h[2] || "", items: [] }; categories.push(cur); } // 見出しの終わりの〔素材〕〔写真〕は種類の印。画面には出さない
   else { const m = line.match(/^(\d+)\. ([★◆]?)(.+)$/); if (m && cur) cur.items.push({ n: +m[1], mark: m[2], text: m[3] }); }
 }
-// 素材の画風（作品を撮った写真として描くもの）
-const material = categories.flatMap((c) => c.items.filter((it) => c.name.includes("素材") || /フィギュア|3Dプリンタ/.test(it.text)).map((it) => it.text));
-// 写真系の画風（イラストではなく写真として仕上げるもの）
-const photo = categories.flatMap((c) => c.items.filter((it) => c.name.includes("写真") && /^(フィルム写真|モノクロ写真)/.test(it.text)).map((it) => it.text));
+// 素材の画風（作品を撮った写真として描くもの）。見出しに〔素材〕と付けた系統の全部と、フィギュア・3Dプリンタの画風
+const material = categories.flatMap((c) => c.items.filter((it) => c.kind === "素材" || /フィギュア|3Dプリンタ/.test(it.text)).map((it) => it.text));
+// 写真系の画風（イラストではなく写真として仕上げるもの）。見出しに〔写真〕と付けた系統の全部
+const photo = categories.flatMap((c) => c.items.filter((it) => c.kind === "写真").map((it) => it.text));
+// 画風の番号は1から続きで、重なり・抜けがないこと（一覧は系統ごとに並ぶので、番号順でなくてよい）。形の合わない行は読み飛ばされるので、ここで気づく
+const styleItems = categories.flatMap((c) => c.items);
+styleItems.map((it) => it.n).sort((a, b) => a - b).forEach((n, i) => { if (n !== i + 1) fail08("画風の番号に重なりか抜けがあります：" + (i + 1) + " のはずの所が " + n + " です（「番号. 画風」の形になっていない行がないかも見てください）"); });
+// 素材・写真になる画風の番号。見出しの印の付け忘れや系統の入れ違いで、種類が黙って変わるのを止める（素材・写真の画風を足したら、ここも直す）
+const KIND_NO = { "素材": [15, 16, 17, 18, 19, 20, 21, 22, 23, 43, 44, 51, 52, 53, 54, 55, 56, 57, 58, 59], "写真": [46, 47, 71, 72, 73, 74, 75, 76, 77, 78] };
+for (const [k, list] of [["素材", material], ["写真", photo]]) {
+  const got = styleItems.filter((it) => list.includes(it.text)).map((it) => it.n).sort((a, b) => a - b);
+  if (got.join() !== KIND_NO[k].join()) fail08(k + "の画風の番号が、決めた物と違います。今：" + got.join("・") + "／決めた物：" + KIND_NO[k].join("・") + "（見出しの〔" + k + "〕と、tools/build.js の KIND_NO を見てください）");
+}
 
 function parseOpts(text) {
   const items = []; let legend = "";
